@@ -1,0 +1,267 @@
+-- Tive que dar uma pesquisada certinho nas diferenças, nas criacões da tabela relatei a mudança do VARCAHR para o VARCHAR2 e tambem
+-- o number ao invés de int,integer ou float. No inicio estranhei NUMBER ser um valor também para decimais, mas pesquisei e vi que estava correto
+
+CREATE TABLE gestor (
+    id_gestor NUMBER PRIMARY KEY,
+    nome VARCHAR2(80),
+    cargo VARCHAR2(20)
+);
+
+CREATE TABLE funcionario (
+    id_funcionario NUMBER PRIMARY KEY,
+    nome VARCHAR2(80),
+    cargo VARCHAR2(20),
+    data_admissao DATE,
+    id_gestor NUMBER,
+    FOREIGN KEY (id_gestor) REFERENCES gestor(id_gestor)
+);
+
+CREATE TABLE meta (
+    id_meta NUMBER PRIMARY KEY,
+    tipo VARCHAR2(80),
+    qtd_prevista NUMBER,
+    data_cadastro DATE,
+    id_funcionario NUMBER,
+    FOREIGN KEY (id_funcionario) REFERENCES funcionario(id_funcionario)
+);
+
+CREATE TABLE atingimento
+(
+    id_atingimento NUMBER PRIMARY KEY,
+    id_meta        NUMBER,
+    id_funcionario NUMBER,
+    qtd_atingida   NUMBER,
+    data_registro  DATE,
+    nota           NUMBER,
+    data_avaliacao DATE,
+    FOREIGN KEY (id_meta) REFERENCES meta (id_meta),
+    FOREIGN KEY (id_funcionario) REFERENCES funcionario (id_funcionario)
+);
+
+
+CREATE TABLE categoria (
+    id_categoria NUMBER PRIMARY KEY,
+    nome VARCHAR2(50)
+);
+
+
+-- Aqui nos inserts notei tudo muito parecido, mas o uso do TO DATE(), para o conversão de STR para DATA é obrigatório na ORACLE
+
+INSERT ALL
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (1, 'João Silva', 'Analista', TO_DATE('2022-01-10', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (2, 'Maria Oliveira', 'Gerente', TO_DATE('2021-05-15', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (3, 'Carlos Souza', 'Desenvolvedor', TO_DATE('2020-03-22', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (4, 'Ana Costa', 'Designer', TO_DATE('2019-08-30', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (5, 'Pedro Martins', 'Engenheiro', TO_DATE('2018-12-11', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (6, 'Larissa Santos', 'Coordenador', TO_DATE('2021-07-01', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (7, 'Fernanda Lima', 'Assistente', TO_DATE('2022-02-20', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (8, 'Roberto Mendes', 'Contador', TO_DATE('2019-04-17', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (9, 'Beatriz Ribeiro', 'RH', TO_DATE('2020-09-05', 'YYYY-MM-DD'), 1)
+    INTO funcionario (id_funcionario, nome, cargo, data_admissao, id_gestor) 
+    VALUES (10, 'Guilherme Farias', 'Suporte', TO_DATE('2022-06-13', 'YYYY-MM-DD'), 1)
+SELECT * FROM dual;
+
+
+INSERT INTO gestor (id_gestor, nome, cargo) VALUES
+    (1, 'Carlos Albuquerque', 'Presidente');
+
+INSERT ALL
+    INTO categoria (id_categoria, nome) 
+    VALUES (1, 'Seguro')
+    INTO categoria (id_categoria, nome) 
+    VALUES (2, 'Contas')
+    INTO categoria (id_categoria, nome) 
+    VALUES (3, 'Financiamentos')
+    INTO categoria (id_categoria, nome) 
+    VALUES (4, 'Empréstimo')
+SELECT * FROM dual;
+
+INSERT ALL
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (1, 'Seguro', 50, TO_DATE('2024-01-01', 'YYYY-MM-DD'), 1)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (2, 'Contas', 30, TO_DATE('2024-01-02', 'YYYY-MM-DD'), 2)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (3, 'Financiamentos', 20, TO_DATE('2024-01-03', 'YYYY-MM-DD'), 3)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (4, 'Empréstimo', 40, TO_DATE('2024-01-04', 'YYYY-MM-DD'), 4)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (5, 'Seguro', 15, TO_DATE('2024-01-05', 'YYYY-MM-DD'), 5)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (6, 'Contas', 25, TO_DATE('2024-01-06', 'YYYY-MM-DD'), 6)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (7, 'Financiamentos', 35, TO_DATE('2024-01-07', 'YYYY-MM-DD'), 7)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (8, 'Empréstimo', 45, TO_DATE('2024-01-08', 'YYYY-MM-DD'), 8)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (9, 'Seguro', 60, TO_DATE('2024-01-09', 'YYYY-MM-DD'), 9)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (10, 'Contas', 70, TO_DATE('2024-01-10', 'YYYY-MM-DD'), 10)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (11, 'Financiamentos', 80, TO_DATE('2024-01-11', 'YYYY-MM-DD'), 1)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (12, 'Empréstimo', 90, TO_DATE('2024-01-12', 'YYYY-MM-DD'), 2)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (13, 'Seguro', 10, TO_DATE('2024-01-13', 'YYYY-MM-DD'), 3)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (14, 'Contas', 20, TO_DATE('2024-01-14', 'YYYY-MM-DD'), 4)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (15, 'Financiamentos', 30, TO_DATE('2024-01-15', 'YYYY-MM-DD'), 5)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (16, 'Empréstimo', 40, TO_DATE('2024-01-16', 'YYYY-MM-DD'), 6)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (17, 'Seguro', 25, TO_DATE('2024-01-17', 'YYYY-MM-DD'), 7)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (18, 'Contas', 35, TO_DATE('2024-01-18', 'YYYY-MM-DD'), 8)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (19, 'Financiamentos', 45, TO_DATE('2024-01-19', 'YYYY-MM-DD'), 9)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (20, 'Empréstimo', 55, TO_DATE('2024-01-20', 'YYYY-MM-DD'), 10)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (21, 'Seguro', 33, TO_DATE('2024-01-21', 'YYYY-MM-DD'), 1)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (22, 'Contas', 22, TO_DATE('2024-01-22', 'YYYY-MM-DD'), 2)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (23, 'Financiamentos', 12, TO_DATE('2024-01-23', 'YYYY-MM-DD'), 3)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (24, 'Empréstimo', 8, TO_DATE('2024-01-24', 'YYYY-MM-DD'), 4)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (25, 'Seguro', 73, TO_DATE('2024-01-25', 'YYYY-MM-DD'), 5)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (26, 'Contas', 82, TO_DATE('2024-01-26', 'YYYY-MM-DD'), 6)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (27, 'Financiamentos', 91, TO_DATE('2024-01-27', 'YYYY-MM-DD'), 7)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (28, 'Empréstimo', 15, TO_DATE('2024-01-28', 'YYYY-MM-DD'), 8)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (29, 'Seguro', 42, TO_DATE('2024-01-29', 'YYYY-MM-DD'), 9)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (30, 'Contas', 54, TO_DATE('2024-01-30', 'YYYY-MM-DD'), 10)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (31, 'Financiamentos', 66, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 1)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (32, 'Empréstimo', 78, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 2)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (33, 'Seguro', 88, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 3)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (34, 'Contas', 76, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 4)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (35, 'Financiamentos', 64, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 5)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (36, 'Empréstimo', 52, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 6)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (37, 'Seguro', 11, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 7)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (38, 'Contas', 22, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 8)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (39, 'Financiamentos', 33, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 9)
+    INTO meta (id_meta, tipo, qtd_prevista, data_cadastro, id_funcionario) VALUES (40, 'Empréstimo', 44, TO_DATE('2024-01-31', 'YYYY-MM-DD'), 10)
+SELECT * FROM dual;
+
+
+INSERT ALL
+    INTO atingimento (id_atingimento, id_meta, id_funcionario, qtd_atingida, data_registro, nota, data_avaliacao) 
+        VALUES (1, 1, 1, 30, TO_DATE('2024-11-01', 'YYYY-MM-DD'), TO_NUMBER((30/50)*100), TO_DATE('2024-12-01', 'YYYY-MM-DD'))
+    INTO atingimento (id_atingimento, id_meta, id_funcionario, qtd_atingida, data_registro, nota, data_avaliacao) 
+        VALUES (2, 2, 2, 15, TO_DATE('2024-11-02', 'YYYY-MM-DD'), TO_NUMBER((15/30)*100), TO_DATE('2024-12-02', 'YYYY-MM-DD'))
+    INTO atingimento (id_atingimento, id_meta, id_funcionario, qtd_atingida, data_registro, nota, data_avaliacao) 
+        VALUES (3, 3, 3, 10, TO_DATE('2024-11-03', 'YYYY-MM-DD'), TO_NUMBER((10/20)*100), TO_DATE('2024-12-03', 'YYYY-MM-DD'))
+    INTO atingimento (id_atingimento, id_meta, id_funcionario, qtd_atingida, data_registro, nota, data_avaliacao) 
+        VALUES (4, 4, 4, 25, TO_DATE('2024-11-04', 'YYYY-MM-DD'), TO_NUMBER((25/40)*100), TO_DATE('2024-12-04', 'YYYY-MM-DD'))
+    INTO atingimento (id_atingimento, id_meta, id_funcionario, qtd_atingida, data_registro, nota, data_avaliacao) 
+        VALUES (5, 5, 5, 20, TO_DATE('2024-11-05', 'YYYY-MM-DD'), TO_NUMBER((20/15)*100), TO_DATE('2024-12-05', 'YYYY-MM-DD'))
+SELECT * FROM dual;
+
+
+
+
+
+SELECT * FROM ATINGIMENTO;
+SELECT * FROM GESTOR;
+SELECT * FROM CATEGORIA;
+SELECT * FROM META;
+SELECT * FROM funcionario;
+
+
+
+
+-- funcionario que atingiu 100% da meta
+SELECT
+    f.nome AS funcionario,
+    COUNT(a.id_meta) AS metas_atingidas
+FROM
+    funcionario f
+    JOIN atingimento a ON f.id_funcionario = a.id_funcionario
+    JOIN meta m ON a.id_meta = m.id_meta
+GROUP BY
+    f.id_funcionario, f.nome
+HAVING
+    MIN(a.qtd_atingida * 1.0 / m.qtd_prevista) >= 1; -- aqui defenimos 100*, se fosse 0.7 seria 70%
+
+
+
+
+-- media de vendas por categoria usando RANK() para ranquear e seperando os resultados por desempenho
+WITH MediaVendas AS (
+    SELECT
+        m.tipo,
+        AVG(a.qtd_atingida) AS media_vendas
+    FROM
+        meta m
+            JOIN
+        atingimento a ON m.id_meta = a.id_meta
+    GROUP BY
+        m.tipo
+),
+     Desempenho AS (
+         SELECT
+             tipo,
+             media_vendas,
+             RANK() OVER (ORDER BY media_vendas DESC) AS ranking
+         FROM
+             MediaVendas
+     )
+SELECT
+    d.tipo,
+    d.media_vendas,
+    CASE
+        WHEN d.ranking = 1 THEN 'Melhor'
+        WHEN d.ranking = (SELECT COUNT(DISTINCT tipo) FROM MediaVendas) THEN 'Pior'
+        ELSE 'Mediano'
+        END AS desempenho
+FROM
+    Desempenho d;
+
+
+
+
+
+-- media da nota final do gestor (adicionei a logica para retornar apenas 2 casas decimais para o numero não ficar muito extenso)
+SELECT
+    g.nome AS gestor,
+    ROUND(AVG(a.nota), 2) AS media_notas_finais
+FROM
+    gestor g
+        LEFT JOIN
+    funcionario f ON g.id_gestor = f.id_gestor
+        LEFT JOIN
+    atingimento a ON f.id_funcionario = a.id_funcionario
+GROUP BY
+    g.id_gestor, g.nome
+ORDER BY
+    media_notas_finais DESC;
+
+
+
+-- listando os funcionarios que a meta prevista é maior do que a meta conquistada, também retornando o valor que é faltande para o atingimento
+SELECT
+    f.nome AS funcionario,
+    m.tipo AS categoria,
+    m.qtd_prevista AS qtd_prevista,
+    a.qtd_atingida AS qtd_atingida,
+    (m.qtd_prevista - a.qtd_atingida) AS qtd_faltante
+FROM
+    funcionario f
+JOIN
+    atingimento a ON f.id_funcionario = a.id_funcionario
+JOIN
+    meta m ON a.id_meta = m.id_meta
+WHERE
+    a.qtd_atingida < m.qtd_prevista
+ORDER BY
+    f.nome, m.tipo;
+
+
+
+-- calcula a média da quantidade atingida e a média da porcentagem de metas atingidas por categoria(tmabém limitei em 2 casas decimais)
+SELECT
+    m.tipo AS categoria,
+    AVG(a.qtd_atingida) AS media_qtd_atingida,
+    ROUND(AVG(a.qtd_atingida * 1.0 / m.qtd_prevista) * 100, 2) AS melhor_categoria_por_porcentagem
+FROM
+    meta m
+JOIN
+    atingimento a ON m.id_meta = a.id_meta
+GROUP BY
+    m.tipo
+ORDER BY
+    melhor_categoria_por_porcentagem DESC;
+    
+    
+    
+    
+GRANT SELECT ON atingimento TO nestor;
+GRANT SELECT ON categoria TO nestor;
+GRANT SELECT ON funcionario TO nestor;
+GRANT SELECT ON gestor TO nestor;
+GRANT SELECT ON meta TO nestor;
