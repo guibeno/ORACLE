@@ -1,0 +1,12 @@
+SELECT * FROM shared.employees;
+SELECT * FROM shared.departments;
+
+
+explain plan for 
+SELECT
+employees.employeename AS NomeEmpregado,
+departments.dptoname AS NomeDepartamento
+FROM shared.employees
+INNER JOIN shared.departments ON employees.dptoid = departments.dptoid;
+SELECT * FROM table(DBMS_XPLAN.DISPLAY);
+
