@@ -1,0 +1,47 @@
+CREATE FUNCTION sigla_estado(nome IN VARCHAR2)
+RETURN VARCHAR2
+IS
+    sigla VARCHAR2(2);
+BEGIN
+    CASE
+        WHEN UPPER(nome) = 'ACRE' THEN sigla := 'AC';
+        WHEN UPPER(nome) = 'RIO GRANDE DO SUL' THEN sigla := 'RS';
+        WHEN UPPER(nome) = 'SANTA CATARINA' THEN sigla := 'SC';
+        WHEN UPPER(nome) = 'MATO GROSSO' THEN sigla := 'MT';
+        WHEN UPPER(TRIM(nome)) = 'RIO DE JANEIRO' THEN sigla := 'RJ';
+        
+        ELSE sigla :='??';
+    END CASE;
+    
+    RETURN sigla;
+END;
+
+SELECT sigla_estado('Acre') FROM dual;
+SELECT sigla_estado('Brasil') FROM dual;
+SELECT sigla_estado('rio de janeiro') FROM dual;
+SELECT sigla_estado('mato grosso') FROM dual;
+
+-------------
+
+
+CREATE FUNCTION cpf_valido2(cpf IN VARCHAR2)
+RETURN VARCHAR2
+IS
+resultado VARCHAR2(3);
+BEGIN
+    IF LENGTH(TRIM(cpf)) = 11 THEN  resultado := 'SIM';
+    ELSE    resultado := 'NAO';
+    END IF;
+    
+    RETURN resultado;
+END;
+
+SELECT cpf_valido2('12345678900               ') FROM dual;
+
+SELECT cpf_valido2('12345678900') FROM dual;
+
+SELECT cpf_valido2('1234567890') FROM dual;
+
+-----------
+
+---CREATE FUNCTION power(numero,3)
