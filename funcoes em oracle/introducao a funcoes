@@ -44,4 +44,100 @@ SELECT cpf_valido2('1234567890') FROM dual;
 
 -----------
 
----CREATE FUNCTION power(numero,3)
+
+-- FUNCAO AO CUBO 
+CREATE OR REPLACE FUNCTION power_cubo(numero IN NUMBER) RETURN NUMBER IS
+BEGIN
+    RETURN POWER(numero, 3);
+END;
+
+SELECT power_cubo(4) FROM dual; 
+
+SELECT power_cubo(9) FROM dual;
+
+SELECT power_cubo(2) FROM dual; 
+
+
+-- FUNCAO NUMERO E EXPOENTE
+CREATE OR REPLACE FUNCTION power_geral(numero IN NUMBER, expoente IN NUMBER) RETURN NUMBER IS
+BEGIN
+    RETURN POWER(numero, expoente);
+END;
+
+SELECT power_geral(2,4) FROM dual;
+
+SELECT power_geral(9,5) FROM dual;
+
+SELECT power_geral(3,3) FROM dual;
+
+
+
+CREATE TABLE pessoa_salario (
+    id INT PRIMARY KEY,
+    nome VARCHAR(100),
+    salario DECIMAL(10,2)
+);
+
+INSERT ALL
+  INTO pessoa_salario (id, nome, salario) VALUES (1, 'Ana Oliveira', 2500.00)
+  INTO pessoa_salario (id, nome, salario) VALUES (2, 'Bruno Souza', 7800.50)
+  INTO pessoa_salario (id, nome, salario) VALUES (3, 'Carla Mendes', 0.00)
+  INTO pessoa_salario (id, nome, salario) VALUES (4, 'Diego Martins', 3200.75)
+  INTO pessoa_salario (id, nome, salario) VALUES (5, 'Eduarda Silva', 10500.00)
+  INTO pessoa_salario (id, nome, salario) VALUES (6, 'Felipe Rocha', 9999.99)
+  INTO pessoa_salario (id, nome, salario) VALUES (7, 'Gabriela Lima', 4300.20)
+  INTO pessoa_salario (id, nome, salario) VALUES (8, 'Henrique Torres', 1500.00)
+  INTO pessoa_salario (id, nome, salario) VALUES (9, 'Isabela Costa', 8700.00)
+  INTO pessoa_salario (id, nome, salario) VALUES (10, 'João Pereira', 6100.35)
+SELECT * FROM dual;
+
+
+CREATE OR REPLACE FUNCTION calcula_salario(p_salario IN NUMBER) 
+RETURN VARCHAR2 IS
+    retorna VARCHAR2(20);
+BEGIN 
+    CASE 
+        WHEN p_salario < 3000 THEN
+            retorna := 'Baixo';
+        WHEN p_salario > 7000 THEN
+            retorna := 'Alto';
+        ELSE
+            retorna := 'Médio';
+    END CASE;
+
+    RETURN retorna;
+END;
+
+
+        
+SELECT nome, salario, calcula_salario(salario) AS classificacao
+FROM pessoa_salario;
+
+
+
+CREATE OR REPLACE FUNCTION calcula_salario_com_desconto(p_salario IN NUMBER) 
+RETURN VARCHAR2 IS
+    retorna VARCHAR2(20);
+    salario_com_desconto NUMBER;
+    
+BEGIN 
+    salario_com_desconto:= p_salario -(p_salario*0.17); 
+    
+    CASE 
+        WHEN salario_com_desconto < 3000 THEN
+            retorna := 'Baixo';
+        WHEN salario_com_desconto > 7000 THEN
+            retorna := 'Alto';
+        ELSE
+            retorna := 'Médio';
+    END CASE;
+
+    RETURN retorna;
+END;
+
+
+
+
+
+SELECT nome, calcula_salario_com_desconto(salario) AS salario_com_desconto
+FROM pessoa_salario;
