@@ -1,0 +1,74 @@
+CREATE OR REPLACE PACKAGE friendly_calc_pkg AS
+    PROCEDURE mostrar_soma(p1 IN NUMBER, p2 IN NUMBER);
+    FUNCTION quadrado(p_num IN NUMBER) RETURN NUMBER;
+    PROCEDURE bem_vindo(p_nome IN VARCHAR2);
+    PROCEDURE tchau;
+END friendly_calc_pkg;
+/
+
+
+CREATE OR REPLACE PACKAGE BODY friendly_calc_pkg AS
+    v_nome_usuario VARCHAR(100);
+    v_total_operacoes NUMBER := 0;
+    
+    PROCEDURE bem_vindo( p_nome IN VARCHAR2) IS
+    BEGIN 
+        v_nome_usuario := p_nome;
+        DBMS_OUTPUT.PUT_LINE ('OLA, '|| v_nome_usuario || 'BEM VINDO(A)');
+        DBMS_OUTPUT.PUT_LINE ('DATA ATUAL:' || TO_CHAR(SYSDATE, 'DD/MM/YYYY HH24/MI/SS'));
+    END bem_vindo;
+    
+    
+    PROCEDURE mostrar_soma (p1 IN NUMBER, p2 IN NUMBER) IS
+        v_soma NUMBER;
+    BEGIN
+        v_soma := p1 + p2;
+        DBMS_OUTPUT.PUT_LINE ('A soma total é:' || v_soma);
+        v_total_operacoes := v_total_operacoes + 1;
+    END mostrar_soma;
+    
+    
+    FUNCTION quadrado(p_num IN NUMBER)RETURN NUMBER IS
+    BEGIN
+        v_total_operacoes := v_total_operacoes + 1;
+        return POWER(p_num,2);
+    END quadrado;
+    
+    PROCEDURE tchau IS
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE ('TCHAU' || v_nome_usuario || 'VOCE REALIZOU O TOTAL DE' || v_total_operacoes || 'OPERACOES');
+    END tchau;
+
+END friendly_calc_pkg;
+
+
+DECLARE
+    v_resultado NUMBER;
+BEGIN
+    friendly_calc_pkg.bem_vindo('Guilherme');
+
+    friendly_calc_pkg.mostrar_soma(10, 20);
+
+    v_resultado := friendly_calc_pkg.quadrado(4);
+    DBMS_OUTPUT.PUT_LINE('Número original: 4 - Quadrado: ' || v_resultado);
+
+    v_resultado := friendly_calc_pkg.quadrado(7);
+    DBMS_OUTPUT.PUT_LINE('Número original: 7 - Quadrado: ' || v_resultado);
+
+    v_resultado := friendly_calc_pkg.quadrado(2.5);
+    DBMS_OUTPUT.PUT_LINE('Número original: 2.5 - Quadrado: ' || v_resultado);
+
+    v_resultado := friendly_calc_pkg.quadrado(-3);
+    DBMS_OUTPUT.PUT_LINE('Número original: -3 - Quadrado: ' || v_resultado);
+
+    friendly_calc_pkg.tchau;
+END;
+/
+
+
+
+
+
+
+
+ 
