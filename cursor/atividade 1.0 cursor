@@ -1,0 +1,97 @@
+CREATE TABLE clientes (
+id NUMBER PRIMARY KEY,
+nome VARCHAR2(100),
+email VARCHAR2(100)
+);
+CREATE TABLE produtos (
+id NUMBER PRIMARY KEY,
+nome VARCHAR2(100),
+preco NUMBER(10,2),
+estoque NUMBER
+);
+CREATE TABLE pedidos (
+id NUMBER PRIMARY KEY,
+id_cliente NUMBER REFERENCES clientes(id),
+data_pedido DATE,
+valor_total NUMBER(10,2)
+);
+
+
+DECLARE
+  CURSOR c_produtos IS
+    SELECT nome, preco 
+    FROM produtos 
+    WHERE preco > 100;
+BEGIN
+  FOR produto IN c_produtos LOOP
+    DBMS_OUTPUT.PUT_LINE('Produto: ' || produto.nome || ' - Preço: R$ ' || TO_CHAR(produto.preco, 'FM9999990.00'));
+  END LOOP;
+END;
+/
+
+
+DECLARE
+    CURSOR c_cliente IS
+        SELECT nome,email
+        FROM clientes;
+    v_nome clientes.nome%type;
+    v_email clientes.email%type;
+BEGIN
+    OPEN c_cliente;
+    LOOP
+        FETCH c_cliente INTO v_nome, v_email;
+        EXIT WHEN c_cliente%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Nome:' || v_nome || 'Email:' || v_email);
+    END LOOP;
+    CLOSE c_cliente;
+END;
+/
+
+-- EXERCICIO 3: APRESENTAR
+DECLARE
+  p_id_cliente pedidos.id_cliente%TYPE := 15;
+
+  CURSOR c_pedidos_cliente(p_cliente_id pedidos.id_cliente) IS
+    SELECT id, data_pedido
+    FROM GUILHERME.pedidos
+    WHERE id_cliente = p_cliente_id;
+
+  v_id pedidos.id%TYPE;
+  v_data pedidos.data_pedido%TYPE;
+BEGIN
+  OPEN c_pedidos_cliente(p_id_cliente);
+
+  LOOP
+    FETCH c_pedidos_cliente INTO v_id, v_data;
+    EXIT WHEN c_pedidos_cliente%NOTFOUND;
+    DBMS_OUTPUT.PUT_LINE('Pedido ID: ' || v_id || ' - Data: ' || TO_CHAR(v_data, 'DD/MM/YYYY'));
+  END LOOP;
+
+  CLOSE c_pedidos_cliente;
+END;
+/
+
+GRANT SELECT ON GUILHERME.clientes TO nestor;
+GRANT SELECT ON GUILHERME.pedidos TO nestor;
+GRANT SELECT ON GUILHERME.produtos TO nestor;
+
+
+DECLARE
+  CURSOR c_produtos IS
+    SELECT nome, preco 
+    FROM produtos 
+    WHERE preco > 100;
+BEGIN
+  FOR produto IN c_produtos LOOP
+    DBMS_OUTPUT.PUT_LINE('Produto: ' || produto.nome || ' - Preço: R$ ' || TO_CHAR(produto.preco, 'FM9999990.00'));
+  END LOOP;
+END;
+/
+
+
+        
+        
+
+
+
+
