@@ -1,0 +1,18 @@
+CREATE OR REPLACE PROCEDURE aumentar_estoque (
+    p_number IN NUMBER,
+    P_result OUT NUMBER
+) IS
+BEGIN
+    p_result := p_number + 10;
+END aumentar_estoque;
+/
+
+DECLARE
+    v_valor_original NUMBER := 100;
+    v_valor_final NUMBER;
+BEGIN
+    aumentar_estoque(v_valor_original,v_valor_final);
+    DBMS_OUTPUT.PUT_LINE('Valor original: R$ ' || v_valor_original);
+    DBMS_OUTPUT.PUT_LINE('Valor com aumento de 10 unidades: ' || v_valor_final);
+END;
+/
