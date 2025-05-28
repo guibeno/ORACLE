@@ -1,0 +1,14 @@
+CREATE OR REPLACE FUNCTION random_squared (n IN NUMBER) RETURN NUMBER IS
+BEGIN
+    RETURN POWER(n , 2);
+END random_squared;
+
+DECLARE 
+    v_result NUMBER;
+    v_numero_aleatorio NUMBER;
+BEGIN
+    v_numero_aleatorio := TRUNC(DBMS_RANDOM.VALUE(1, 101));
+    v_result:= random_squared(v_numero_aleatorio);
+    DBMS_OUTPUT.PUT_LINE('Numero aleatório: ' ||v_numero_aleatorio);
+    DBMS_OUTPUT.PUT_LINE('Numero aleatório ao quadrado: '|| v_result);
+END;
