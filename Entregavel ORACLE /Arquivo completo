@@ -1,0 +1,120 @@
+
+CREATE OR REPLACE FUNCTION desconto_10_porcento(p_number IN NUMBER) RETURN NUMBER IS
+BEGIN
+   RETURN p_number * 0.9;
+END desconto_10_porcento;
+/
+
+
+DECLARE
+    v_valor_original NUMBER := 200;
+    v_valor_com_desconto NUMBER;
+BEGIN
+    v_valor_com_desconto := desconto_10_porcento(v_valor_original);
+    DBMS_OUTPUT.PUT_LINE('Valor original: R$ ' || v_valor_original);
+    DBMS_OUTPUT.PUT_LINE('Valor com desconto de 10%: R$ ' || v_valor_com_desconto);
+END;
+/
+
+
+
+----------------------- 2
+
+CREATE OR REPLACE PROCEDURE aumentar_estoque (
+    p_number IN NUMBER,
+    P_result OUT NUMBER
+) IS
+BEGIN
+    p_result := p_number + 10;
+END aumentar_estoque;
+/
+
+DECLARE
+    v_valor_original NUMBER := 100;
+    v_valor_final NUMBER;
+BEGIN
+    aumentar_estoque(v_valor_original,v_valor_final);
+    DBMS_OUTPUT.PUT_LINE('Valor original: R$ ' || v_valor_original);
+    DBMS_OUTPUT.PUT_LINE('Valor com aumento de 10 unidades: ' || v_valor_final);
+END;
+/
+
+CREATE TABLE cliente(
+    id NUMBER PRIMARY KEY, 
+    nome VARCHAR2(50),
+    email VARCHAR2 (100)
+);
+
+INSERT ALL
+    INTO cliente (id, nome, email) VALUES (1, 'Ana Souza', 'ana.souza@email.com')
+    INTO cliente (id, nome, email) VALUES (2, 'Carlos Oliveira', 'carlos.oliveira@email.com')
+    INTO cliente (id, nome, email) VALUES (3, 'Fernanda Lima', 'fernanda.lima@email.com')
+    INTO cliente (id, nome, email) VALUES (4, 'Gustavo Pereira', 'gustavo.pereira@email.com')
+    INTO cliente (id, nome, email) VALUES (5, 'Juliana Costa', 'juliana.costa@email.com')
+    INTO cliente (id, nome, email) VALUES (6, 'Lucas Almeida', 'lucas.almeida@email.com')
+    INTO cliente (id, nome, email) VALUES (7, 'Mariana Rocha', 'mariana.rocha@email.com')
+    INTO cliente (id, nome, email) VALUES (8, 'Nicolas Martins', 'nicolas.martins@email.com')
+    INTO cliente (id, nome, email) VALUES (9, 'Olga Fernandes', 'olga.fernandes@email.com')
+    INTO cliente (id, nome, email) VALUES (10, 'Paulo Silva', 'paulo.silva@email.com')
+    INTO cliente (id, nome, email) VALUES (11, 'Quésia Dias', 'quesia.dias@email.com')
+    INTO cliente (id, nome, email) VALUES (12, 'Rafael Gomes', 'rafael.gomes@email.com')
+    INTO cliente (id, nome, email) VALUES (13, 'Sofia Almeida', 'sofia.almeida@email.com')
+    INTO cliente (id, nome, email) VALUES (14, 'Tiago Santos', 'tiago.santos@email.com')
+    INTO cliente (id, nome, email) VALUES (15, 'Ursula Martins', 'ursula.martins@email.com')
+    INTO cliente (id, nome, email) VALUES (16, 'Vera Lima', 'vera.lima@email.com')
+    INTO cliente (id, nome, email) VALUES (17, 'Wagner Costa', 'wagner.costa@email.com')
+    INTO cliente (id, nome, email) VALUES (18, 'Xuxa Oliveira', 'xuxa.oliveira@email.com')
+    INTO cliente (id, nome, email) VALUES (19, 'Yara Santos', 'yara.santos@email.com')
+    INTO cliente (id, nome, email) VALUES (20, 'Zeca Pereira', 'zeca.pereira@email.com')
+SELECT * FROM dual;
+
+CREATE OR REPLACE PROCEDURE consultar_email (
+    p_email OUT VARCHAR2,
+    p_id IN NUMBER
+) IS
+BEGIN
+    SELECT email
+    INTO p_email
+    FROM cliente
+    WHERE id = p_id;
+    
+    EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        p_email := NULL;
+        DBMS_OUTPUT.PUT_LINE('Cliente não encontrado.');
+    WHEN OTHERS THEN
+        p_email := NULL;
+        DBMS_OUTPUT.PUT_LINE('Erro inesperado: ' || SQLERRM);
+END consultar_email;
+
+DECLARE
+    v_email VARCHAR2(100);
+BEGIN
+    consultar_email(v_email,10);
+    IF v_email IS NOT NULL THEN
+        DBMS_OUTPUT.PUT_LINE('Email do cliente: ' || v_email);
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Erro ao tentar encontrar o email');
+    END IF;
+END;
+
+
+------------- 4
+
+CREATE OR REPLACE FUNCTION random_squared (n IN NUMBER) RETURN NUMBER IS
+BEGIN
+    RETURN POWER(n , 2);
+END random_squared;
+
+DECLARE 
+    v_result NUMBER;
+    v_numero_aleatorio NUMBER;
+BEGIN
+    v_numero_aleatorio := TRUNC(DBMS_RANDOM.VALUE(1, 101));
+    v_result:= random_squared(v_numero_aleatorio);
+    DBMS_OUTPUT.PUT_LINE('Numero aleatório: ' ||v_numero_aleatorio);
+    DBMS_OUTPUT.PUT_LINE('Numero aleatório ao quadrado: '|| v_result);
+END;
+    
+    
+----------- 5
