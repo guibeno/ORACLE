@@ -118,3 +118,6 @@ END;
     
     
 ----------- 5
+
+DECLARE listar_funcionarios
+    id_departamento NUMBER;
