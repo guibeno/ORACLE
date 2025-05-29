@@ -1,1 +1,49 @@
+🧩 Função (Function)
+Características:
+
+Retorna obrigatoriamente um valor.
+
+Pode ser utilizada diretamente em instruções SQL, como SELECT, INSERT, UPDATE, etc.
+
+É chamada como parte de uma expressão.
+
+Não deve realizar alterações no banco de dados (como INSERT, UPDATE, DELETE).
+
+Quando usar:
+
+Para cálculos, formatação de dados ou validações que retornam um único valor.
+
+Quando você precisa usar o resultado em uma expressão ou consulta SQL.
+
+🛠 Procedimento (Procedure)
+Características:
+
+Não retorna um valor diretamente.
+
+Pode realizar operações no banco de dados, como INSERT, UPDATE, DELETE.
+
+Pode receber parâmetros de entrada e saída.
+
+É chamado explicitamente usando EXECUTE ou CALL.
+
+Quando usar:
+
+Para executar ações que envolvem manipulação de dados ou lógica de negócios.
+
+Quando você precisa de controle sobre o fluxo de execução, como em transações.
+
+📝 Bloco Anônimo (DECLARE)
+Características:
+
+Não é armazenado no banco de dados.
+
+Executado uma única vez, sem necessidade de criação prévia.
+
+Útil para testes rápidos ou operações temporárias.
+
+Quando usar:
+
+Para execuções pontuais ou testes.
+
+Quando você não precisa reutilizar o código posteriormente.
 
