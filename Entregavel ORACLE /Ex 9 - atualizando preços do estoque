@@ -1,0 +1,16 @@
+BEGIN
+
+    UPDATE estoque_online
+    SET preco = preco * 0.90;
+
+    UPDATE estoque_loja_fisica
+    SET preco = preco * 0.90;
+
+    COMMIT;
+    DBMS_OUTPUT.put_line('Preços atualizados com sucesso.');
+EXCEPTION
+    WHEN OTHERS THEN
+        ROLLBACK;
+        DBMS_OUTPUT.put_line('Erro ao atualizar os preços: ' || SQLERRM);
+END;
+/
