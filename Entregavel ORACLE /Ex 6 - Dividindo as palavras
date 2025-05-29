@@ -1,0 +1,14 @@
+CREATE OR REPLACE FUNCTION dividir_palavras(p_texto IN VARCHAR2)
+RETURN SYS.ODCIVARCHAR2LIST PIPELINED IS
+    v_inicio NUMBER := 1;
+    v_fim NUMBER;
+BEGIN
+    LOOP
+        v_fim := INSTR(p_texto || ' ', ' ', v_inicio);
+        EXIT WHEN v_fim = 0;
+        PIPE ROW (TRIM(SUBSTR(p_texto, v_inicio, v_fim - v_inicio)));
+        v_inicio := v_fim + 1;
+    END LOOP;
+    RETURN;
+END dividir_palavras;
+/
