@@ -1,0 +1,10 @@
+DECLARE
+    v_numero NUMBER := 3;
+BEGIN
+    IF v_numero IN (1, 2, 3, 4, 5) THEN
+        DBMS_OUTPUT.put_line('Número encontrado na lista.');
+    ELSE
+        DBMS_OUTPUT.put_line('Número não encontrado na lista.');
+    END IF;
+END;
+/
