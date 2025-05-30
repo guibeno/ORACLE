@@ -1,0 +1,112 @@
+-- metas instituições
+SELECT * FROM ATINGIMENTO;
+SELECT * FROM GESTOR;
+SELECT * FROM CATEGORIA;
+SELECT * FROM META;
+SELECT * FROM funcionario;
+
+-- pesquisa
+SELECT * FROM PARTICIPANTES1;
+SELECT * FROM perguntas1;
+SELECT * FROM PESQUISAS1;
+SELECT * FROM PESQUISA_PERGUNTA1;
+SELECT * FROM produtos1;
+SELECT * FROM resposta1;
+
+
+-- Ex 1: alterar quantidade vendida para zero
+
+CREATE OR REPLACE PROCEDURE alterar_qtd IS
+BEGIN
+    UPDATE atingimento
+    SET qtd_atingida = 0
+    WHERE data_registro > TO_DATE('29/01/25', 'DD/MM/YY');
+END;
+
+BEGIN
+    alterar_qtd;
+END;
+
+-- Ex 2: 
+
+CREATE OR REPLACE FUNCTION calcular_porcentagem_nota(p_nome_funcionario IN VARCHAR2) 
+RETURN NUMBER IS
+    m_qtd_prevista NUMBER;
+    v_qtd_atingida NUMBER;
+    v_porcentagem NUMBER;
+BEGIN
+    SELECT a.qtd_atingida
+    INTO v_qtd_atingida
+    FROM funcionario f
+    JOIN atingimento a ON a.id_funcionario = f.id_funcionario
+    WHERE f.nome = p_nome_funcionario;
+    
+    SELECT m.qtd_prevista
+    INTO m_qtd_prevista
+    FROM meta m
+    JOIN atingimento a ON m.id_meta = a.id_meta
+    JOIN funcionario f ON f.id_funcionario = a.id_funcionario
+    WHERE f.nome = p_nome_funcionario;
+
+ 
+    v_porcentagem := (v_qtd_atingida / m_qtd_prevista) * 100;
+    
+    
+    
+
+    IF v_porcentagem > 100 THEN
+        RETURN 100;
+    ELSE
+        RETURN v_porcentagem;
+    END IF;
+
+    RETURN v_porcentagem;
+END;
+
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Nota percentual: ' || calcular_porcentagem_nota('Pedro Martins') || '%');
+END;
+
+----- ex 3
+
+CREATE OR REPLACE PROCEDURE salvar_nota_funcionario(p_nome_funcionario IN VARCHAR2) IS
+  v_nota NUMBER;
+  v_exists NUMBER;
+BEGIN
+  SELECT COUNT(*) INTO v_exists FROM funcionario WHERE nome = p_nome_funcionario;
+  
+  IF v_exists = 0 THEN
+    DBMS_OUTPUT.PUT_LINE('Colaborador "' || p_nome_funcionario || '" não encontrado.');
+    RETURN;
+  END IF;
+  
+  BEGIN
+    v_nota := calcular_porcentagem_nota(p_nome_funcionario);
+  EXCEPTION
+    WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('Erro durante o cálculo da nota: ' || SQLERRM);
+      RETURN;
+  END;
+  
+  DELETE FROM notas WHERE nome_funcionario = p_nome_funcionario;
+  
+  INSERT INTO notas (nome_funcionario, nota) VALUES (p_nome_funcionario, v_nota);
+  
+  COMMIT;
+  
+  DBMS_OUTPUT.PUT_LINE('Nota de ' || p_nome_funcionario || ' salva com sucesso: ' || ROUND(v_nota, 2) || '%');
+  
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Erro inesperado: ' || SQLERRM);
+END salvar_nota_funcionario;
+/
+
+     
+    
+
+    
+    
+
+
+
