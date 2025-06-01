@@ -1,0 +1,36 @@
+---- PESQUISA ---
+
+
+SELECT * FROM PARTICIPANTES1;
+SELECT * FROM perguntas1;
+SELECT * FROM PESQUISAS1;
+SELECT * FROM PESQUISA_PERGUNTA1;
+SELECT * FROM produtos1;
+SELECT * FROM resposta1;
+
+INSERT INTO resposta1
+VALUES(100,2,3,3,3,5);
+
+
+
+
+
+------- EX: 1 ---  PESQUISA --- 
+DECLARE
+BEGIN
+    FOR participante IN (
+        SELECT p.nome AS nome_participante, COUNT(*) AS qtd_respostas
+        FROM resposta1 r
+        JOIN participantes1 p ON r.id_participante = p.id_participante
+        GROUP BY p.nome
+        HAVING COUNT(*) > 5
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(
+            'Produto: ' || participante.nome_participante || ' (' || participante.qtd_respostas || ')'
+        );
+    END LOOP;
+END;
+/
+
+
+
