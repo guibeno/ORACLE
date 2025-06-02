@@ -1,0 +1,91 @@
+
+
+SELECT * FROM PARTICIPANTES1;
+SELECT * FROM perguntas1;
+SELECT * FROM PESQUISAS1;
+SELECT * FROM PESQUISA_PERGUNTA1;
+SELECT * FROM produtos1;
+SELECT * FROM resposta1;
+
+INSERT INTO resposta1
+VALUES(100,2,3,3,3,5);
+
+
+
+
+
+------- EX: 1 ---  PESQUISA --- 
+DECLARE
+BEGIN
+    FOR participante IN (
+        SELECT p.nome AS nome_participante, COUNT(*) AS qtd_respostas
+        FROM resposta1 r
+        JOIN participantes1 p ON r.id_participante = p.id_participante
+        GROUP BY p.nome
+        HAVING COUNT(*) > 5
+    ) LOOP
+        DBMS_OUTPUT.PUT_LINE(
+            'Produto: ' || participante.nome_participante || ' (' || participante.qtd_respostas || ')'
+        );
+    END LOOP;
+END;
+/
+
+
+------- EX: 2 --- PESQUISA ---
+CREATE OR REPLACE FUNCTION calcular_nps(p_pergunta_id NUMBER)
+RETURN NUMBER
+IS
+    v_promotores NUMBER := 0;
+    v_detratores NUMBER := 0;
+    v_total NUMBER := 0;
+    v_nps NUMBER;
+BEGIN
+    FOR participante IN (
+        SELECT p.nome AS nome_participante, r.resposta AS nota_participante
+        FROM resposta1 r
+        JOIN participantes1 p ON r.id_participante = p.id_participante
+        WHERE r.id_pergunta = p_pergunta_id
+    ) LOOP
+        DECLARE
+            nota NUMBER;
+        BEGIN
+            nota := TO_NUMBER(participante.nota_participante);
+            v_total := v_total + 1;
+
+            IF nota BETWEEN 0 AND 3 THEN
+                v_detratores := v_detratores + 1;
+                DBMS_OUTPUT.PUT_LINE('Detrator: ' || participante.nome_participante || ' (' || nota || ')');
+            ELSIF nota = 5 THEN
+                v_promotores := v_promotores + 1;
+                DBMS_OUTPUT.PUT_LINE('Promotor: ' || participante.nome_participante || ' (' || nota || ')');
+            END IF;
+            
+        
+        EXCEPTION
+            WHEN VALUE_ERROR THEN
+                DBMS_OUTPUT.PUT_LINE('Erro de conversão para número na nota de ' || participante.nome_participante);
+        END;
+    END LOOP;
+    
+    DBMS_OUTPUT.PUT_LINE('Número total de detratores:' || v_detratores);
+    
+    DBMS_OUTPUT.PUT_LINE('Número total de promotores:' || v_promotores);
+
+    v_nps := ((v_promotores - v_detratores) / v_total) * 100;
+    RETURN v_nps;
+END;
+/
+
+
+DECLARE
+    v_nps NUMBER;
+BEGIN
+    v_nps := calcular_nps(1);
+END;
+/
+
+
+    
+
+
