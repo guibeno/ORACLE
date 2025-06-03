@@ -1,0 +1,220 @@
+-- ================================
+-- CRIAÇÃO DAS TABELAS
+-- ================================
+
+SELECT * FROM clientes_restaurante;
+SELECT * FROM produtos_restaurante;
+SELECT * FROM pedidos_restaurante;
+SELECT * FROM pedido_itens;
+
+
+-- Clientes
+CREATE TABLE clientes_restaurante (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    data_cadastro DATE DEFAULT SYSDATE,
+    ativo CHAR(1) DEFAULT 'S' CHECK (ativo IN ('S', 'N'))
+);
+
+-- Produtos
+CREATE TABLE produtos_restaurante (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    preco NUMBER(10,2) NOT NULL,
+    estoque NUMBER NOT NULL
+);
+
+-- Pedidos
+CREATE TABLE pedidos_restaurante (
+    id NUMBER PRIMARY KEY,
+    id_cliente NUMBER NOT NULL,
+    data_pedido DATE NOT NULL,
+    CONSTRAINT fk_pedidos_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+);
+
+-- Itens do Pedido
+CREATE TABLE pedido_itens (
+    id NUMBER PRIMARY KEY,
+    id_pedido NUMBER NOT NULL,
+    id_produto NUMBER NOT NULL,
+    quantidade NUMBER NOT NULL,
+    preco_unit NUMBER(10,2) NOT NULL,
+    CONSTRAINT fk_pedido FOREIGN KEY (id_pedido) REFERENCES pedidos(id),
+    CONSTRAINT fk_produto FOREIGN KEY (id_produto) REFERENCES produtos(id)
+);
+
+-- ================================
+-- SEQUENCES
+-- ================================
+
+CREATE SEQUENCE seq_clientes START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_produtos START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_pedidos START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_pedido_itens START WITH 1 INCREMENT BY 1;
+
+-- ================================
+-- INSERTS: CLIENTES (20)
+-- ================================
+
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Ana Silva', 'ana.silva@example.com', TO_DATE('2024-01-01','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Bruno Lima', 'bruno.lima@example.com', TO_DATE('2024-01-02','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Carlos Souza', 'carlos.souza@example.com', TO_DATE('2024-01-03','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Daniela Castro', 'daniela.castro@example.com', TO_DATE('2024-01-04','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Eduardo Alves', 'eduardo.alves@example.com', TO_DATE('2024-01-05','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Fernanda Dias', 'fernanda.dias@example.com', TO_DATE('2024-01-06','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Gustavo Pires', 'gustavo.pires@example.com', TO_DATE('2024-01-07','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Helena Martins', 'helena.martins@example.com', TO_DATE('2024-01-08','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Igor Nunes', 'igor.nunes@example.com', TO_DATE('2024-01-09','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Juliana Rocha', 'juliana.rocha@example.com', TO_DATE('2024-01-10','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Kleber Silva', 'kleber.silva@example.com', TO_DATE('2024-01-11','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Lívia Costa', 'livia.costa@example.com', TO_DATE('2024-01-12','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Marcos Mendes', 'marcos.mendes@example.com', TO_DATE('2024-01-13','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Natália Teixeira', 'natalia.teixeira@example.com', TO_DATE('2024-01-14','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Otávio Ferreira', 'otavio.ferreira@example.com', TO_DATE('2024-01-15','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Paula Cardoso', 'paula.cardoso@example.com', TO_DATE('2024-01-16','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Rafael Borges', 'rafael.borges@example.com', TO_DATE('2024-01-17','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Sabrina Lima', 'sabrina.lima@example.com', TO_DATE('2024-01-18','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Thiago Rezende', 'thiago.rezende@example.com', TO_DATE('2024-01-19','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Vanessa Moura', 'vanessa.moura@example.com', TO_DATE('2024-01-20','YYYY-MM-DD'), 'S');
+
+-- ================================
+-- INSERTS: PRODUTOS (20)
+-- ================================
+
+BEGIN
+  FOR i IN 1..20 LOOP
+    INSERT INTO produtos_restaurante VALUES (
+      seq_produtos.NEXTVAL,
+      'Produto ' || i,
+      ROUND(DBMS_RANDOM.VALUE(10, 1000), 2),
+      TRUNC(DBMS_RANDOM.VALUE(10, 500))
+    );
+  END LOOP;
+END;
+/
+
+-- ================================
+-- INSERTS: PEDIDOS (20)
+-- ================================
+
+BEGIN
+  FOR i IN 1..20 LOOP
+    INSERT INTO pedidos_restaurante VALUES (
+      seq_pedidos.NEXTVAL,
+      TRUNC(DBMS_RANDOM.VALUE(1, 21)), -- cliente_id entre 1 e 20
+      TO_DATE('2024-02-01','YYYY-MM-DD') + MOD(i, 30)
+    );
+  END LOOP;
+END;
+/
+
+-- ================================
+-- INSERTS: PEDIDO_ITENS (20)
+-- ================================
+
+BEGIN
+  FOR i IN 1..20 LOOP
+    INSERT INTO pedido_itens VALUES (
+      seq_pedido_itens.NEXTVAL,
+      TRUNC(DBMS_RANDOM.VALUE(1, 21)), -- pedido_id entre 1 e 20
+      TRUNC(DBMS_RANDOM.VALUE(1, 21)), -- produto_id entre 1 e 20
+      TRUNC(DBMS_RANDOM.VALUE(1, 10)), -- quantidade
+      ROUND(DBMS_RANDOM.VALUE(10, 1000), 2) -- preco_unit
+    );
+  END LOOP;
+END;
+/
+
+-- FIM DO SCRIPT
+
+--- criação da tabela de erros
+CREATE TABLE log_erros (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_pedido NUMBER,
+    id_produto NUMBER,
+    mensagem VARCHAR2(255),
+    data_ocorrencia DATE DEFAULT SYSDATE
+);
+
+
+
+CREATE OR REPLACE PROCEDURE lancar_pedidos(p_id_pedido IN NUMBER) AS
+    CURSOR c_itens IS
+        SELECT pe.id_produto, pe.quantidade, pe.preco_unit
+        FROM pedido_itens pe
+        WHERE pe.id_pedido = p_id_pedido;
+
+    v_estoque_atual produtos.estoque%TYPE;
+    v_total_pedido NUMBER := 0;
+    v_itens_processados NUMBER := 0;
+BEGIN
+    FOR item IN c_itens LOOP
+        -- Obter estoque atual do produto
+        BEGIN
+            SELECT estoque INTO v_estoque_atual
+            FROM produtos_restaurante
+            WHERE id = item.id_produto;
+
+            IF v_estoque_atual >= item.quantidade THEN
+                -- Atualiza estoque
+                UPDATE produtos_restaurante
+                SET estoque = estoque - item.quantidade
+                WHERE id = item.id_produto;
+
+                -- Soma valor ao total
+                v_total_pedido := v_total_pedido + (item.preco_unit * item.quantidade);
+                v_itens_processados := v_itens_processados + 1;
+
+                DBMS_OUTPUT.PUT_LINE('Produto ' || item.id_produto || ' processado com sucesso.');
+
+            ELSE
+                -- Log de erro por estoque insuficiente
+                INSERT INTO log_erros (id_pedido, id_produto, mensagem)
+                VALUES (p_id_pedido, item.id_produto, 'Estoque insuficiente');
+
+                DBMS_OUTPUT.PUT_LINE('Erro: Produto ' || item.id_produto || ' sem estoque suficiente.');
+
+            END IF;
+
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN
+                INSERT INTO log_erros (id_pedido, id_produto, mensagem)
+                VALUES (p_id_pedido, item.id_produto, 'Produto não encontrado');
+
+                DBMS_OUTPUT.PUT_LINE('Erro: Produto ' || item.id_produto || ' não encontrado.');
+        END;
+
+    END LOOP;
+
+    DBMS_OUTPUT.PUT_LINE('===== RESUMO DO PEDIDO =====');
+    DBMS_OUTPUT.PUT_LINE('Valor total processado: R$ ' || TO_CHAR(v_total_pedido, '9999.99'));
+    DBMS_OUTPUT.PUT_LINE('Itens processados com sucesso: ' || v_itens_processados);
+
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('Erro inesperado: ' || SQLERRM);
+END;
+/
+
+BEGIN
+    lancar_pedidos(1); -- Substitua pelo ID do pedido desejado
+END;
+/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
