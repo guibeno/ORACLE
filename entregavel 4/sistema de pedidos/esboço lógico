@@ -1,0 +1,29 @@
+CREATE OR REPLACE PROCEDURE lancar_pedidos(p_id_pedido
+    v_total_pedido NUMBER;
+    v__total__estoque NUMBER;
+BEGIN
+    SELECT p.id as id_pedido, pe.quatidade AS quantidade_pedido,  pe.preco_unit AS preco_unidade
+    FROM pedidos_restaurante p
+    JOIN pedido_itens pe ON p.id = pe.id_pedido
+    WHERE p_id__pedido = pe.id_pedido
+    
+    SELECT e.estoque AS estoque_produtos
+    FROM produtos_restaurante
+    JOIN pe.pedido_itens ON e.id = pe.id_produto
+    WHERE p_id_pedido = pe.id_pedido
+    
+    CASE WHEN 
+        estoque_produtos > quantidade_pedido
+        DBMS_OUTPUT.PUT_LINE('Produto tem em estoque!!');
+        UPDATE estoque 
+        FROM produtos_restaurante
+        SET estoque = estoque - quantidade_pedido
+        WHERE e.id = pe.id_pedido
+    IF 
+        estoque_produto < quantidade_pedido
+        DBMS_OUTPUT.PUT_LINE('Pedido cancelado, quantidade insuficiente!!');
+        
+    v_valor_pedido := pe.preco_unit * quantidade_pedido
+        
+    DBMS_OUTPUT.PUT_LINE('Valor total do pedido' || v_valor_pedido);
+        
