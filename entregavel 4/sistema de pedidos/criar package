@@ -1,1 +1,238 @@
 
+SELECT * FROM clientes_restaurante;
+SELECT * FROM produtos_restaurante;
+SELECT * FROM pedidos_restaurante;
+SELECT * FROM pedido_itens;
+
+
+-- cricao das tabelas
+CREATE TABLE clientes_restaurante (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    data_cadastro DATE DEFAULT SYSDATE,
+    ativo CHAR(1) DEFAULT 'S' CHECK (ativo IN ('S', 'N'))
+);
+
+
+CREATE TABLE produtos_restaurante (
+    id NUMBER PRIMARY KEY,
+    nome VARCHAR2(100) NOT NULL,
+    preco NUMBER(10,2) NOT NULL,
+    estoque NUMBER NOT NULL
+);
+
+
+CREATE TABLE pedidos_restaurante (
+    id NUMBER PRIMARY KEY,
+    id_cliente NUMBER NOT NULL,
+    data_pedido DATE NOT NULL,
+    CONSTRAINT fk_pedidos_cliente FOREIGN KEY (id_cliente) REFERENCES clientes(id)
+);
+
+
+CREATE TABLE pedido_itens (
+    id NUMBER PRIMARY KEY,
+    id_pedido NUMBER NOT NULL,
+    id_produto NUMBER NOT NULL,
+    quantidade NUMBER NOT NULL,
+    preco_unit NUMBER(10,2) NOT NULL,
+    CONSTRAINT fk_pedido FOREIGN KEY (id_pedido) REFERENCES pedidos(id),
+    CONSTRAINT fk_produto FOREIGN KEY (id_produto) REFERENCES produtos(id)
+);
+
+-- aqui usei o chat gpt para os inserts
+
+
+CREATE SEQUENCE seq_clientes START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_produtos START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_pedidos START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE seq_pedido_itens START WITH 1 INCREMENT BY 1;
+
+
+
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Ana Silva', 'ana.silva@example.com', TO_DATE('2024-01-01','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Bruno Lima', 'bruno.lima@example.com', TO_DATE('2024-01-02','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Carlos Souza', 'carlos.souza@example.com', TO_DATE('2024-01-03','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Daniela Castro', 'daniela.castro@example.com', TO_DATE('2024-01-04','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Eduardo Alves', 'eduardo.alves@example.com', TO_DATE('2024-01-05','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Fernanda Dias', 'fernanda.dias@example.com', TO_DATE('2024-01-06','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Gustavo Pires', 'gustavo.pires@example.com', TO_DATE('2024-01-07','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Helena Martins', 'helena.martins@example.com', TO_DATE('2024-01-08','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Igor Nunes', 'igor.nunes@example.com', TO_DATE('2024-01-09','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Juliana Rocha', 'juliana.rocha@example.com', TO_DATE('2024-01-10','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Kleber Silva', 'kleber.silva@example.com', TO_DATE('2024-01-11','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Lívia Costa', 'livia.costa@example.com', TO_DATE('2024-01-12','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Marcos Mendes', 'marcos.mendes@example.com', TO_DATE('2024-01-13','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Natália Teixeira', 'natalia.teixeira@example.com', TO_DATE('2024-01-14','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Otávio Ferreira', 'otavio.ferreira@example.com', TO_DATE('2024-01-15','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Paula Cardoso', 'paula.cardoso@example.com', TO_DATE('2024-01-16','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Rafael Borges', 'rafael.borges@example.com', TO_DATE('2024-01-17','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Sabrina Lima', 'sabrina.lima@example.com', TO_DATE('2024-01-18','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Thiago Rezende', 'thiago.rezende@example.com', TO_DATE('2024-01-19','YYYY-MM-DD'), 'S');
+INSERT INTO clientes_restaurante VALUES (seq_clientes.NEXTVAL, 'Vanessa Moura', 'vanessa.moura@example.com', TO_DATE('2024-01-20','YYYY-MM-DD'), 'S');
+
+
+
+BEGIN
+  FOR i IN 1..20 LOOP
+    INSERT INTO produtos_restaurante VALUES (
+      seq_produtos.NEXTVAL,
+      'Produto ' || i,
+      ROUND(DBMS_RANDOM.VALUE(10, 1000), 2),
+      TRUNC(DBMS_RANDOM.VALUE(10, 500))
+    );
+  END LOOP;
+END;
+/
+
+
+
+BEGIN
+  FOR i IN 1..20 LOOP
+    INSERT INTO pedidos_restaurante VALUES (
+      seq_pedidos.NEXTVAL,
+      TRUNC(DBMS_RANDOM.VALUE(1, 21)), -- cliente_id entre 1 e 20
+      TO_DATE('2024-02-01','YYYY-MM-DD') + MOD(i, 30)
+    );
+  END LOOP;
+END;
+/
+
+
+
+BEGIN
+  FOR i IN 1..20 LOOP
+    INSERT INTO pedido_itens VALUES (
+      seq_pedido_itens.NEXTVAL,
+      TRUNC(DBMS_RANDOM.VALUE(1, 21)), -- pedido_id entre 1 e 20
+      TRUNC(DBMS_RANDOM.VALUE(1, 21)), -- produto_id entre 1 e 20
+      TRUNC(DBMS_RANDOM.VALUE(1, 10)), -- quantidade
+      ROUND(DBMS_RANDOM.VALUE(10, 1000), 2) -- preco_unit
+    );
+  END LOOP;
+END;
+/
+
+---------- FIM DOS INSERTS ----------
+
+
+-- criacao da tabela de erros que inserimos ao não ter estoque suficiente de um produto
+CREATE TABLE log_erros (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_pedido NUMBER,
+    id_produto NUMBER,
+    mensagem VARCHAR2(255),
+    data_ocorrencia DATE DEFAULT SYSDATE
+);
+
+SELECT * FROM log_erros;
+
+
+-- aqui declaramos a procedure, so ela pois é publica e o a funcao verificar_estoque é privada
+CREATE OR REPLACE PACKAGE pkg_pedidos IS
+  PROCEDURE lancar_pedidos(p_id_pedido IN NUMBER);
+END pkg_pedidos;
+
+
+
+
+
+CREATE OR REPLACE PACKAGE BODY pkg_pedidos IS
+    -- funcao para verificao de estoque
+     FUNCTION verificar_estoque(p_id_produto NUMBER,p_quantidade_produto NUMBER) RETURN VARCHAR2 IS
+        v_estoque_final NUMBER;
+            
+    BEGIN
+        -- na variavel v_estoque_final declarada na funcao, salvamos ela o total do estoque do item (usamos o id do produto com identificador)
+        SELECT e.estoque INTO v_estoque_final
+        FROM produtos_restaurante e
+        WHERE id = p_id_produto;
+        
+        --- se v_estoque for maior que p_quantidade_produto (parametro mandado dentro da procedure lancar pedido), retornamos 'v'
+        IF v_estoque_final >= p_quantidade_produto  THEN
+            RETURN 'V';
+        ELSE
+        --- se nao retornamos 'f'
+            RETURN 'F';
+        END IF;
+   
+    END verificar_estoque;
+        
+        
+
+  PROCEDURE lancar_pedidos(p_id_pedido IN NUMBER) AS
+    --- este cursor é responsavel por obter os dados da tabela pedido_itens, utilizando o where para identificar o id_pedido que passamos como para parametro quando chamamos o pacote
+    CURSOR c_itens IS
+        SELECT pe.id_produto, pe.quantidade, pe.preco_unit
+        FROM pedido_itens pe
+        WHERE pe.id_pedido = p_id_pedido;
+        
+    --- declaração das variaveis
+    v_estoque_atual produtos.estoque%TYPE;
+    v_total_pedido NUMBER := 0;
+    v_itens_processados NUMBER := 0;
+    v_verificacao VARCHAR2(1);
+    -- v_vericacao apenas com varchar2(1) pois sempre so recebe v ou f
+  BEGIN
+    FOR item IN c_itens LOOP
+      BEGIN
+      -- em v_verificao salvamos o retorno da funcao verificar_estoque, quando chamamos mandamos de parametro os dados do produto e quantidade salvos dentro da variavel item
+       v_verificacao := verificar_estoque(item.id_produto, item.quantidade);
+       -- se a verificao retornou v, continuamos a logica pois temos estoque
+        IF v_verificacao = 'V' THEN
+            DBMS_OUTPUT.PUT_LINE('Estoque do produto: V');
+        
+        -- fazemos o update do estoque, atualizando o estoque - quantidade(do pedido)
+          UPDATE produtos_restaurante
+          SET estoque = estoque - item.quantidade
+          WHERE id = item.id_produto;
+
+          --- aqui somamos o valor do total do pedido, pegamos o preco unitario e a quantidade e multiplicamos
+          v_total_pedido := v_total_pedido + (item.preco_unit * item.quantidade);
+          v_itens_processados := v_itens_processados + 1;
+
+          DBMS_OUTPUT.PUT_LINE('Produto ' || item.id_produto || ' processado com sucesso.');
+        ELSE
+        
+            -- else significa que a funcao de estoque retornou f, ou seja, estoque insuficiente
+        DBMS_OUTPUT.PUT_LINE('Estoque do produto: F');
+          
+          -- inserido os itens sem estoque na tabela de log
+          INSERT INTO log_erros (id_pedido, id_produto, mensagem)
+          VALUES (p_id_pedido, item.id_produto, 'estoque insuficiente');
+
+          DBMS_OUTPUT.PUT_LINE('erro: Produto ' || item.id_produto || ' estoque insuficiente.');
+        END IF;
+
+      EXCEPTION  
+      -- caso algum produto de produto nao encontrado
+        WHEN NO_DATA_FOUND THEN
+          INSERT INTO log_erros (id_pedido, id_produto, mensagem)
+          VALUES (p_id_pedido, item.id_produto, 'Produto não encontrado');
+
+          DBMS_OUTPUT.PUT_LINE('erro: Produto ' || item.id_produto || ' não encontrado.');
+      END;
+    END LOOP;
+    
+    --- saida dbms de todas informações do pedido
+
+    DBMS_OUTPUT.PUT_LINE('---- RESUMO DO PEDIDO ------');
+    DBMS_OUTPUT.PUT_LINE('Valor total processado: R$ ' || TO_CHAR(v_total_pedido, '9999.99'));
+    DBMS_OUTPUT.PUT_LINE('Itens processados com sucesso: ' || v_itens_processados);
+
+  END lancar_pedidos;
+
+END pkg_pedidos;
+
+
+---- aqui testando o id produto = 1 testamos o log do erro pois  os produtos 5, 10 que estao na venda 1, não apresentam estoque suficiente
+BEGIN
+  pkg_pedidos.lancar_pedidos(1); -- id do pedido
+END;
+
+
+
+
+
+
