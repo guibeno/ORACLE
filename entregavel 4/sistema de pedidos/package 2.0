@@ -1,1 +1,136 @@
 
+SELECT * FROM clientes_restaurante;
+SELECT * FROM produtos_restaurante;
+SELECT * FROM pedidos_restaurante;
+SELECT * FROM pedido_itens;
+SELECT * FROM log_erros;
+
+--- criacao do pacote e a declaracao da funcao e procedure que usaremos dentro do body
+CREATE OR REPLACE PACKAGE clientes_pkg IS
+  FUNCTION verificar_inatividade(p_id_cliente IN NUMBER) RETURN VARCHAR2;
+  PROCEDURE inativar_cliente;
+END clientes_pkg;
+
+
+
+CREATE OR REPLACE PACKAGE BODY clientes_pkg IS
+        -- criacao da funcao para verificar inatividade recebemos de paramentro o id do cliente que iremos verificar o status 
+        FUNCTION verificar_inatividade(p_id_cliente IN NUMBER) RETURN VARCHAR2 IS
+            cadastro DATE;  -- criacao da variavel onde ficara armazenada a ultima data
+        BEGIN
+            -- este select traz a ultima data de acesso do cliente usando como parametro no where o id que veio da procedure
+            SELECT c.data_cadastro INTO cadastro
+            FROM clientes_restaurante c
+            WHERE id = p_id_cliente;
+            
+            -- se o usuario nao acessou nos ultimos 365 dias, v para inativo
+            -- sysdate pega a data de hoje, por isso independente da data funcionara como espera, pois sempre pega o dia de hoje - 365 dias
+            IF cadastro < SYSDATE - 365 THEN
+                DBMS_OUTPUT.PUT_LINE('Usuario inativo: V');
+                RETURN 'V';
+                --- retorno do valor que sera capturado na procedure
+            ELSE 
+                DBMS_OUTPUT.PUT_LINE('Usuario inativo: F');
+                RETURN 'F';
+                --- retorno do valor que sera capturado na procedure
+            END IF;
+        END;
+   
+    
+    PROCEDURE inativar_cliente IS
+    
+    --- cursor cliente capta todos os ids de todos os clientes
+    CURSOR c_clientes IS
+      SELECT id FROM clientes_restaurante;
+
+    v_status VARCHAR2(1);  -- variavel onde sera salvo o retorno da funcao verificar_inatividade (varchar2(1) pois so pode retornar uma caracter)
+  BEGIN
+    -- 
+    FOR cliente IN c_clientes LOOP
+      v_status := verificar_inatividade(cliente.id);
+      -- aqui captamos o retorno da funcao
+      
+    -- se v_status for 'v' ele passe adiante na logica
+      IF v_status = 'V' THEN
+      
+        -- update responsavel por mudar a linha ativo de 'S' para 'N' tendo em mente que o usuario esta inativo a 365 dias
+        UPDATE clientes_restaurante
+        SET ativo = 'N'
+        WHERE id = cliente.id;
+        --- usei como parametro o cliente_id, mesmo dado que tambem passamos de parametro ao chamar a funcao
+
+        DBMS_OUTPUT.PUT_LINE('Cliente ' || cliente.id || ' inativado.');
+      ELSE
+        --- caso nao retorne 'V', significa que o cliente foi ativo ao menos 1 vez nos ultimos 365 dias
+        
+        DBMS_OUTPUT.PUT_LINE('Cliente ' || cliente.id || ' continua ativo.');
+      END IF;
+    END LOOP;
+  END inativar_cliente;
+
+END clientes_pkg;
+
+BEGIN
+  clientes_pkg.inativar_cliente;
+END;
+
+
+
+DECLARE
+    -- aqui criei as variaveis que posteriormente serao usamos nos parametro(valeus) ao dar os insert da venda
+  v_cliente_id clientes_restaurante.id%TYPE;
+  v_pedido_id pedidos_restaurante.id%TYPE;
+  v_produto_id produtos_restaurante.id%TYPE;
+  v_estoque produtos_restaurante.estoque%TYPE;
+  v_preco produtos_restaurante.preco%TYPE;
+  v_quantidade NUMBER;
+BEGIN
+    --- criei um loop que ira se repetir 20 vezes
+  FOR venda IN 1..20 LOOP
+    -- salvei na variavel v_cliente o id de um cliente que capturamos aleatoriamente com a funcao random
+    SELECT id INTO v_cliente_id
+    FROM (
+      SELECT id FROM clientes_restaurante
+      ORDER BY DBMS_RANDOM.VALUE
+    ) WHERE ROWNUM = 1;
+        -- rownum = 1 responsavel por captar apenas um valor (id) do random
+
+    -- aqui selecionei um produto com mais de 10 itens no estoque e salvamos seus dados nas variaveis criadas anteriormente
+    SELECT id, estoque, preco INTO v_produto_id, v_estoque, v_preco
+    FROM produtos_restaurante
+    WHERE estoque >= 10
+    AND ROWNUM = 1;
+
+    --- qtd aleatória entre 1  e 5
+    v_quantidade := LEAST(TRUNC(DBMS_RANDOM.VALUE(1, 5)), v_estoque);
+
+    -- insercao da variavel v_id_cliente escolhida aleatoriamente por random, tambem salvei a data com sysdate que salva no banco data e horario atual
+    INSERT INTO pedidos_restaurante (id, id_cliente, data_pedido)
+    VALUES (seq_pedidos.NEXTVAL, v_cliente_id, SYSDATE)
+    RETURNING id INTO v_pedido_id;
+
+    --- insercao das variacao dos itens dos pedidos
+    INSERT INTO pedido_itens (id,id_pedido, id_produto, quantidade, preco_unit)
+    VALUES (seq_pedido_itens.NEXTVAL,v_pedido_id, v_produto_id, v_quantidade, v_preco);
+
+    COMMIT;
+    DBMS_OUTPUT.PUT_LINE('Venda ' || venda || ' criada para cliente ' || v_cliente_id);
+  END LOOP;
+END;
+
+
+---- validacao de todos clientes inativos
+BEGIN
+  clientes_pkg.inativar_cliente;
+  
+  DBMS_OUTPUT.PUT_LINE('Validação dos clientes inativos concluída.');
+END;
+/
+
+
+
+
+
+
+
+
