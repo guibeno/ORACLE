@@ -125,7 +125,6 @@ BEGIN
   
   DBMS_OUTPUT.PUT_LINE('Validação dos clientes inativos concluída.');
 END;
-/
 
 
 
