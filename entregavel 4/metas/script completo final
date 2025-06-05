@@ -40,7 +40,7 @@ INSERT INTO atingimento (
 
 
 -- Ex 1: alterar quantidade vendida para zero
-
+--- no where adicionamos a logica de zerar o atingimento depois da data de 29/01
 CREATE OR REPLACE PROCEDURE alterar_qtd IS
 BEGIN
     UPDATE atingimento
@@ -53,6 +53,7 @@ BEGIN
 END;
 
 -- Ex 2: 
+
 
 CREATE OR REPLACE FUNCTION calcular_porcentagem_nota(p_nome_funcionario IN VARCHAR2) 
 RETURN NUMBER IS
@@ -73,12 +74,13 @@ BEGIN
     JOIN funcionario f ON f.id_funcionario = a.id_funcionario
     WHERE f.nome = p_nome_funcionario;
 
- 
+     -- aqui salvei na variavel o calculo da porcentagem
     v_porcentagem := (v_qtd_atingida / m_qtd_prevista) * 100;
     
-    
+    -- se a porcentagem for suporior a 100 ele retorna 100
     IF v_porcentagem > 100 THEN
         RETURN 100;
+    --- se nao retorna o resultado 
     ELSE
         RETURN v_porcentagem;
     END IF;
