@@ -29,7 +29,7 @@ BEGIN
         );
     END LOOP;
 END;
-/
+
 
 
 ------- EX: 2 --- PESQUISA ---
@@ -75,7 +75,6 @@ BEGIN
     v_nps := ((v_promotores - v_detratores) / v_total) * 100;
     RETURN v_nps;
 END;
-/
 
 
 DECLARE
@@ -83,7 +82,7 @@ DECLARE
 BEGIN
     v_nps := calcular_nps(2);
 END;
-/
+
 
 
 
@@ -92,7 +91,7 @@ END;
 ------ EX: 3 ---- PESQUISA
 
 CREATE OR REPLACE TYPE t_palavras AS TABLE OF VARCHAR2(4000);
-/
+
 
 CREATE OR REPLACE FUNCTION dividir_palavras(p_texto IN VARCHAR2)
 RETURN t_palavras
@@ -110,7 +109,7 @@ BEGIN
     END LOOP;
     RETURN v_palavras;
 END;
-/
+
 
 CREATE OR REPLACE FUNCTION contar_palavras(p_texto IN VARCHAR2)
 RETURN NUMBER
@@ -120,7 +119,7 @@ BEGIN
     v_palavras := dividir_palavras(p_texto);
     RETURN v_palavras.COUNT;
 END;
-/
+
 
 DECLARE
     v_texto VARCHAR2(4000) := 'Olá tudo bem, como foi seu dia';
@@ -130,7 +129,7 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('Palavra ' || i || ': ' || dividir_palavras(v_texto)(i));
     END LOOP;
 END;
-/
+
 
 
 
