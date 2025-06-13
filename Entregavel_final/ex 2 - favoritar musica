@@ -1,1 +1,44 @@
+SELECT * FROM musica_musicasalva_curtida;
+SELECT * FROM musica_musicasalva;
+SELECT * FROM auth_user;
+
+
+
+CREATE OR REPLACE PROCEDURE favoritar (
+    nome_musica IN VARCHAR2,
+    id_usuario IN NUMBER
+) IS
+    v_musica_id musica_musicasalva.id%TYPE;
+    v_existente NUMBER;
+BEGIN
+    BEGIN
+        SELECT id INTO v_musica_id
+        FROM musica_musicasalva
+        WHERE nome = nome_musica;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Faixa não existe');
+            RETURN;
+    END;
+
+    SELECT COUNT(*) INTO v_existente
+    FROM musica_musicasalva_curtida
+    WHERE musicasalva_id = v_musica_id
+      AND user_id = id_usuario;
+
+    IF v_existente > 0 THEN
+        DBMS_OUTPUT.PUT_LINE('Música ja exist na playlist');
+        RETURN;
+    END IF;
+
+    INSERT INTO musica_musicasalva_curtida (musicasalva_id, user_id)
+    VALUES (v_musica_id, id_usuario);
+
+    DBMS_OUTPUT.PUT_LINE('Música foi favoritada');
+END;
+
+
+BEGIN
+    favoritar('Nome da Música', 1);
+END;
 
