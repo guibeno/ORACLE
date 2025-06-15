@@ -1,0 +1,42 @@
+
+
+select * from musica_musicasalva;
+select * from musica_playlist;
+select * from musica_musicasalva_playlists;
+
+CREATE OR REPLACE PROCEDURE listas_musica_mais_salva1 IS
+    -- cursor para pegar as 15 musica mais salva
+    CURSOR cursor_musicas IS
+        SELECT m.musicasalva_id, COUNT(*) AS total_vezes -- aqui usei o count para contabilizar
+        FROM musica_musicasalva_playlists m
+        GROUP BY m.musicasalva_id  
+        ORDER BY total_vezes DESC  -- order by desc para ordem decrescente
+        FETCH FIRST 15 ROWS ONLY;  --- se salva os 15 com maior numero do count
+
+    --criando as variaveis
+    nome_musica VARCHAR2(255);  
+    contador INTEGER := 0;
+    total_vezes INTEGER;
+BEGIN
+    FOR musica IN cursor_musicas LOOP
+        -- pegar o nome da musica na tabela musica_musicasalva
+        SELECT nome INTO nome_musica 
+        FROM musica_musicasalva 
+        WHERE id = musica.musicasalva_id; 
+        
+        -- contador para as 15 linhas (ex linha1, linha2)
+        contador := contador + 1;
+        -- aqui salvamos o count la do primeiro select, ira imprimar quantas vezes foi salva
+        total_vezes := musica.total_vezes;
+
+        DBMS_OUTPUT.PUT_LINE('musica mais adicionada em playlist é ' || contador || ': ' || nome_musica || ' salva ' || total_vezes || ' vezes');
+    END LOOP;
+END listas_musica_mais_salva1;
+
+
+
+BEGIN
+  listas_musica_mais_salva1;
+END;
+
+
