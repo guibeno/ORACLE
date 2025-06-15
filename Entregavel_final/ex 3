@@ -1,0 +1,80 @@
+
+
+
+SELECT * FROM auth_user;
+SELECT * FROM comunidade_post_curtidores;
+SELECT * FROM comunidade_post;
+SELECT * FROM musica_musicasalva_curtida;
+SELECT * FROM musica_musicasalva;
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE buscar_usuario_por_campo(
+    nome_coluna IN VARCHAR2,
+    valor IN VARCHAR2
+)
+IS
+    -- variavcel do id encontrado
+    id_usuario_encontrado NUMBER;
+    -- nom_completo para adicionar o nome_completo do usuario encontrado
+    nome_completo VARCHAR2(100);
+    -- armazenar a quatidade de likes em posts do usuario encontrado
+    qtd_likes_no_post NUMBER;
+    -- Quantidade de músicas curtidas
+    qtd_musica_salva_por_usuario NUMBER;
+    -- variavel onde sera armazenado sql dinamico
+    sql_busca_id VARCHAR2(1000);
+    
+    TYPE cursor_usuario IS REF CURSOR;
+    c_usuario cursor_usuario;
+
+BEGIN
+    -- neste select, selecionamos o id da tabela auth_user, onde o where é responsaval por filtrar a coluna que passamos com parametro, o ' = :1' é um marcador que sera atualizado para o valor que passamos em parametro
+    sql_busca_id := 'SELECT id 
+                    FROM auth_user 
+                    WHERE ' || nome_coluna || ' = :1'; -- caso tenha duvida sobre o placeholder, utilizamos placeholders no semestre passado no trabahlo do ifood
+   
+
+    -- executa o sql imediatamente, o using passa valor ao placeholder
+     OPEN c_usuario FOR sql_busca_id USING valor; --- abrimos o cursos , passando atraves do using o valor que passamos em parametro na procedure
+
+   
+    LOOP
+        FETCH c_usuario INTO id_usuario_encontrado; -- inseri o dado do cursor na variavel id_usuario_encontrado
+         -- todos os select vai usar o id_usuario_encontrado como parametro no where para identificar o usuario corretamente
+         
+        -- concatenacao do nome completo do usuario e salvamos na variavel nome_completo
+        SELECT a.first_name || ' ' || a.last_name
+        INTO nome_completo
+        FROM auth_user a
+        WHERE a.id = id_usuario_encontrado;
+    
+        -- quantos posts o usuario curtiu
+        SELECT COUNT(*)
+        INTO qtd_likes_no_post
+        FROM comunidade_post_curtidores c
+        WHERE c.user_id = id_usuario_encontrado;
+    
+        -- Cquantas musica o usuario curtiu
+        SELECT COUNT(*)
+        INTO qtd_musica_salva_por_usuario
+        FROM musica_musicasalva_curtida m
+        WHERE m.user_id = id_usuario_encontrado;
+    
+        -- print dos resultados
+        DBMS_OUTPUT.PUT_LINE('nome completo: ' || nome_completo || ', likes nos posts: ' || qtd_likes_no_post || ', quantidade de musica curtidas: ' || qtd_musica_salva_por_usuario);
+    END LOOP;
+
+EXCEPTION  -- excessao caso o parametro enviado para a procedure seja incorreto
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('usuario nao encontrado.');
+
+END buscar_usuario_por_campo;
+
+BEGIN
+    buscar_usuario_por_campo('first_name', 'joao');
+END;
+
+    
