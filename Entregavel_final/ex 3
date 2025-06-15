@@ -1,6 +1,8 @@
 
 
 
+
+
 SELECT * FROM auth_user;
 SELECT * FROM comunidade_post_curtidores;
 SELECT * FROM comunidade_post;
@@ -43,6 +45,7 @@ BEGIN
    
     LOOP
         FETCH c_usuario INTO id_usuario_encontrado; -- inseri o dado do cursor na variavel id_usuario_encontrado
+        EXIT WHEN c_usuario%NOTFOUND; -- se usuario não for achado, da exit na aplicação, sem isso seria um loop ifinito
          -- todos os select vai usar o id_usuario_encontrado como parametro no where para identificar o usuario corretamente
          
         -- concatenacao do nome completo do usuario e salvamos na variavel nome_completo
