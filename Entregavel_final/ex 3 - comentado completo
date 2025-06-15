@@ -1,8 +1,5 @@
 
 
-
-
-
 SELECT * FROM auth_user;
 SELECT * FROM comunidade_post_curtidores;
 SELECT * FROM comunidade_post;
@@ -69,6 +66,8 @@ BEGIN
         -- print dos resultados
         DBMS_OUTPUT.PUT_LINE('nome completo: ' || nome_completo || ', likes nos posts: ' || qtd_likes_no_post || ', quantidade de musica curtidas: ' || qtd_musica_salva_por_usuario);
     END LOOP;
+    CLOSE c_usuario;
+
 
 EXCEPTION  -- excessao caso o parametro enviado para a procedure seja incorreto
     WHEN NO_DATA_FOUND THEN
@@ -77,7 +76,7 @@ EXCEPTION  -- excessao caso o parametro enviado para a procedure seja incorreto
 END buscar_usuario_por_campo;
 
 BEGIN
-    buscar_usuario_por_campo('first_name', 'joao');
+    buscar_usuario_por_campo('first_name', 'teste');
 END;
 
     
