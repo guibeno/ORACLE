@@ -8,7 +8,7 @@ CREATE OR REPLACE PROCEDURE favoritar (
     nome_musica IN VARCHAR2,
     id_usuario IN NUMBER
 ) IS
-    v_musica_id musica_musicasalva.id%TYPE;
+    v_musica_id musica_musicasalva NUMBER;
     v_existente NUMBER;
 BEGIN
     BEGIN
