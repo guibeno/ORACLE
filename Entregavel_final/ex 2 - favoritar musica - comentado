@@ -1,0 +1,45 @@
+SELECT * FROM musica_musicasalva_curtida;
+SELECT * FROM musica_musicasalva;
+SELECT * FROM auth_user;
+
+
+-- criacao da procedure favoritar
+CREATE OR REPLACE PROCEDURE favoritar (
+    nome_musica IN VARCHAR2,  -- parametros de entrada ao chamar a procedure, nome_musica com varchar (texto) o id como number(numero)
+    id_usuario IN NUMBER
+) IS
+    v_musica_id musica_musicasalva NUMBER;  -- criei essas variaveis para armazenar os dados importante dos selects nelas
+    v_existente NUMBER;
+BEGIN  -- criacao do primeiro bloco da funcao
+    BEGIN -- este bloco sera executado primeiramente, depois do end sera executado o bloco criado anteriormente na funcao
+        SELECT id INTO v_musica_id -- escolhi salvar dentro da variavel v_musica_id, o id da musica que possui o mesmo nome da musica que passamos no parametro
+        FROM musica_musicasalva
+        WHERE nome = nome_musica;  --- aqui é executada a logica, coluna nome tem que ser = ao nome passado no parametro
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN  -- caso nenhum nome de musica salvas no banco ser igual ao no do parametro, nada foi encontrado ( no_data_found)
+            DBMS_OUTPUT.PUT_LINE('Faixa não existe'); -- alerta de que não existe faixa com este nome salva no banco
+            RETURN;
+    END;
+
+    SELECT COUNT(*) INTO v_existente -- criei este select com a ideia de quem se o count foi maior que 0 inserido em v_existente quer dizer que a musica ja existe na playlist
+    FROM musica_musicasalva_curtida
+    WHERE musicasalva_id = v_musica_id  -- para isto a coluna do id da musica salva deve bater com o v_musica id do primeiro select que criei
+      AND user_id = id_usuario;  -- e tambem a coluna user id deve bater com o id_usuario passado em parametro ao chamar a funcao
+
+    IF v_existente > 0 THEN  -- se o count retornar mais que 1, a musica ja existe na playslits
+        DBMS_OUTPUT.PUT_LINE('Música ja exist na playlist');
+        RETURN;
+    END IF;
+    
+     -- se nao, inserimos a musica
+    INSERT INTO musica_musicasalva_curtida (musicasalva_id, user_id)  -- colunas das quais vamos inserir os novos dados
+    VALUES (v_musica_id, id_usuario);  -- aqui passei o id_musica que obtemos no primeiro select, e o id_usuario que passamos como parametro na funcao
+
+    DBMS_OUTPUT.PUT_LINE('Música foi favoritada'); -- musica foi favoritada com sucesso
+END;
+
+
+BEGIN
+    favoritar('Nome da Música', 1);
+END;
+
