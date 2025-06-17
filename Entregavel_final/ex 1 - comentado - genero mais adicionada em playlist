@@ -1,0 +1,40 @@
+
+select * from musica_musicasalva;
+select * from musica_musicasalva_playlists;
+
+
+
+
+CREATE OR REPLACE FUNCTION generos_mais_curtidos
+RETURN VARCHAR2
+IS
+    -- variavel responsavel por armazenar o nome do genero mais curtido
+    nome_genero_na_playlist VARCHAR2(50);
+BEGIN
+  
+    SELECT genero
+    INTO nome_genero_na_playlist  -- inseriomos o nome do genero na variavel atraves do into
+    FROM (
+        SELECT g.genero, COUNT(*) AS total  -- o total representa a contagem através do count, que percorre todas colunas da tabela
+        FROM musica_musicasalva g
+        JOIN musica_musicasalva_playlists m ON g.id = m.musicasalva_id  -- esse join é reponsavel por interligar o id da musica e o id da musica dentro das playlists
+        GROUP BY g.genero 
+        ORDER BY total DESC -- na variavel total temos o contador de cada genero, organizamos eles de forma decrescente, assim sendo o primeiro total é o genero em maior numero
+    )
+    FETCH FIRST 1 ROW ONLY; -- apenas resgatamos o primeiro resultado, pois estando em ordem decrescente o primeiro é o maior
+
+
+    RETURN nome_genero_na_playlist;
+END generos_mais_curtidos;
+
+
+
+SELECT generos_mais_curtidos FROM dual; -- chamamos a funcao para retorna o return
+
+
+
+
+
+    
+    
+    
