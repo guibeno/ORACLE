@@ -1,36 +1,39 @@
 
 CREATE OR REPLACE PROCEDURE usuario_segue (
-    nome_usuario IN VARCHAR2
+    nome_usuario IN VARCHAR2 -- esta variavel recebe o parametro ao chamar a procedure
 ) IS
     id_usuario NUMBER;
     id_seguido NUMBER;
     seguidor_reciproco NUMBER;
     nome_seguido VARCHAR2(100);
     
-    CURSOR c_seguidos IS
+--  c_seguidores pega todos as pessoas que o usuario atual segue
+    CURSOR c_seguidos IS  
         SELECT usuario_id
         FROM usuario_seguidor
         WHERE seguidor_id = id_usuario;
-BEGIN
-    SELECT id INTO id_usuario
+
+BEGIN -- criacao do bloco
+
+    SELECT id INTO id_usuario -- inserimos na variavel id_usuario o id que o nome concatenado do usuario, primeiro e segundo no é igual ao nome_usuario passado como parametro
     FROM auth_user
-    WHERE first_name || last_name = nome_usuario;
+    WHERE first_name || last_name = nome_usuario; -- aqui esta a logica, concatenação do nome = nome_usuario
 
-    DBMS_OUTPUT.PUT_LINE('usuario que ' || nome_usuario || ' segue e que nao o seguem de volta');
+    DBMS_OUTPUT.PUT_LINE('usuario que ' || nome_usuario || ' segue e que nao o seguem de volta');  -- print do nome do usuario que estamos realizando a pesquisa
 
-    FOR seguido IN c_seguidos LOOP
+    FOR seguido IN c_seguidos LOOP  -- a cada pessoa em c_seguidos ( cursor onde contem todas as pessoas que o usuario atual segue)
 
-        SELECT COUNT(*) INTO seguidor_reciproco
+        SELECT COUNT(*) INTO seguidor_reciproco -- salvo o count, se os usuario se seguirem, retorna 1, se não retorna 0, pois no where foi identificado que nao se seguem
         FROM usuario_seguidor
-        WHERE seguidor_id = seguido.usuario_id AND usuario_id = id_usuario;
+        WHERE seguidor_id = seguido.usuario_id AND usuario_id = id_usuario;       usuario_id: é o usuário que está sendo seguido, seguidor_id: é o usuário que está seguindo, se for = eles se seguem
 
-        IF seguidor_reciproco = 0 THEN
-            SELECT first_name || ' ' || last_name
-            INTO nome_seguido
+        IF seguidor_reciproco = 0 THEN  -- se a variavel que foi salvo o count for =  0
+            SELECT first_name || ' ' || last_name  -- concateno o nome completo do usuario que esta no loop atual 
+            INTO nome_seguido -- fica salvo o nome completo
             FROM auth_user
-            WHERE id = seguido.usuario_id;
+            WHERE id = seguido.usuario_id;  
 
-            DBMS_OUTPUT.PUT_LINE(' - ' || nome_seguido);
+            DBMS_OUTPUT.PUT_LINE(' - ' || nome_seguido);  -- aqui print a lista de quem não segue de volta
         END IF;
 
     END LOOP;
@@ -38,7 +41,7 @@ END;
 
 
 
-DECLARE
+DECLARE  -- criação do bloco anonimo
     -- aqui faco a concatenação do nome completo de cada usuario
     CURSOR todos_usuarios IS
         SELECT id, first_name || last_name AS nome_completo
