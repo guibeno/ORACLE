@@ -1,0 +1,2 @@
+sendo uma duvida, os begin e end internos no codigo - Begin e end criam bloco dentro da procedure, assim o compiladorer sabe exatamente o que é executavel e se diferencia das criações de variaveis, 
+tambem, é possivel  atraves dos blocos usa-los como um controle de fluxo, se damos exit em bloco ele executa o bloco posterior a ele, por isso considero interessante e válido seu uso
