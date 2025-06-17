@@ -69,7 +69,7 @@ BEGIN
     CLOSE c_usuario;
 
 
-EXCEPTION  -- excessao caso o parametro enviado para a procedure seja incorreto
+EXCEPTION  -- excessao caso o parametro enviado para a procedure seja incorreto, não sendo encontrado
     WHEN NO_DATA_FOUND THEN
         DBMS_OUTPUT.PUT_LINE('usuario nao encontrado.');
 
