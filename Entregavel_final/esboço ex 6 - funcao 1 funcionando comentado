@@ -1,0 +1,48 @@
+-- EXERCICIO 6
+
+SELECT * FROM auth_user;
+SELECT * FROM musica_musicasalva;
+SELECT * FROM musica_musicasalva_playlistS;
+SELECT * FROM musica_playlist;
+
+CREATE OR REPLACE PACKAGE mydj AS  -- criacao do pacote
+    FUNCTION id_do_usuario(nome_usuario IN VARCHAR2) RETURN NUMBER;  -- declaracao das funcões e procedures que irei fazer no package
+    PROCEDURE criar_playlist(genero IN VARCHAR2)
+END mydj;
+    
+CREATE OR REPLACE PACKAGE BODY mydj AS
+
+    FUNCTION id_do_usuario(nome_usuario IN VARCHAR2) RETURN NUMBER IS
+        id_usuario_final NUMBER;  -- variavel que sera retornada com o valor da busca
+    BEGIN
+        -- seleciona o id do usuario e salva em id_usuario_final
+        -- a logica consiste em concatemar firt_name + ' ' + last_name, o espaço no meio é para receber como entrada o nome ex: guilherme dalmoro, e nao guilhermedalmoro, este dado deve ser igual ao nome_usuario
+        SELECT a.id INTO id_usuario_final
+        FROM auth_user a
+        WHERE TRIM(a.first_name ||' '|| a.last_name) = nome_usuario;
+
+        RETURN id_usuario_final;   -- retorna o dado
+    END id_do_usuario;
+    
+    PROCEDURE criar_playlist(genero)
+        id_musica_por_genero VARCHAR2
+         p_playlist_id NUMBER
+    cursor musica in musica_musicasalva
+    
+        select m.id in id_musica_por_genero
+        FROM musica_musicasalva m
+        WHERE m.genero = genero
+        fecth only rolls ramdom 25
+        
+    
+    INSERT INTO musica_playlist(id,nome,descricao,user_id) values(sequencia criada,'playlist generica', 'playlist generica do usuario', id_usuario_final)
+    
+    
+
+END mydj;
+
+
+
+SELECT mydj.id_do_usuario('teste 3') AS id_usuario
+FROM dual;
+
