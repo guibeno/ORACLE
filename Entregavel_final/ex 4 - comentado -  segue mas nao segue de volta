@@ -42,10 +42,12 @@ END;
 
 
 DECLARE  -- criação do bloco anonimo
-    -- aqui faco a concatenação do nome completo de cada usuario
+    -- aqui atraves deste cursor faco a concatenação do nome completo de cada usuario
     CURSOR todos_usuarios IS
         SELECT id, first_name || last_name AS nome_completo
         FROM auth_user;
+    
+    -- declaracao de todas as variaveis do bloco anonimo
 
     id_atual_usuario NUMBER;
     nome_atual_usuario VARCHAR2(100);
@@ -55,43 +57,52 @@ DECLARE  -- criação do bloco anonimo
     maior_quantidade_nao_reciprocados NUMBER := 0;
     usuario_com_mais_nao_reciprocados VARCHAR2(100);
 
-    -- confere quem o usuario atual segue
+    -- este cursor retorna todos as pessoas que o usuario atual segue
     CURSOR usuarios_seguidos(p_id_usuario NUMBER) IS
         SELECT usuario_id
         FROM usuario_seguidor
-        WHERE seguidor_id = p_id_usuario;
+        WHERE seguidor_id = p_id_usuario;  
 BEGIN
  
+    
     FOR usuario IN todos_usuarios LOOP
-        total_nao_seguem_de_volta := 0;
-        id_atual_usuario := usuario.id;
-        nome_atual_usuario := usuario.nome_completo;
+       
+        total_nao_seguem_de_volta := 0; -- variavel que sera usada como contador
+        id_atual_usuario := usuario.id;  -- id_atual_usuario recebe o valor do atual usuario do cursor
+        nome_atual_usuario := usuario.nome_completo;  nome_atual_usuario recebe o nome do atual usuario do cursor
 
         -- loop por cada pessoa que o usuário atual segue
         FOR seguido IN usuarios_seguidos(id_atual_usuario) LOOP
-            -- verificao se a pessoa segue o usuario de volta
+            -- mesma logica do select dentro da procedure, porem aqui por estar em um loop que passa por todos usuarios a cada volta ele analisa um usuario diferente
             SELECT COUNT(*) INTO quantidade_reciprocidade
             FROM usuario_seguidor
             WHERE seguidor_id = seguido.usuario_id
               AND usuario_id = id_atual_usuario;
 
-            -- Se não segue de volta, soma na contagem
+            -- se quantidade_reciprocidade for = 0, significa que o usuario não é seguido de volta
             IF quantidade_reciprocidade = 0 THEN
+
+             -- soma +1 na variaval reponsavel pela contagem de quem não seguido de volta
                 total_nao_seguem_de_volta := total_nao_seguem_de_volta + 1;
-            END IF;
-        END LOOP;
+            END IF; -- finaliza o if
+        END LOOP;  -- finaliza o loop
 
         -- Verifica se o usuário atual tem mais "não seguidores de volta" do que o anterior
-        IF total_nao_seguem_de_volta > maior_quantidade_nao_reciprocados THEN
-            maior_quantidade_nao_reciprocados := total_nao_seguem_de_volta;
-            usuario_com_mais_nao_reciprocados := nome_atual_usuario;
+        IF total_nao_seguem_de_volta > maior_quantidade_nao_reciprocados THEN  --  maior_quantidade_nao_reciprocados começa valendo 0, após o primeiro loop ele asume o valor de  total_nao_seguem_de_volta;
+            maior_quantidade_nao_reciprocados := total_nao_seguem_de_volta;  -- ao passar novamente pelo loop o maior_quantidade_nao_reciprocado tera o  valor da busca anterior, caso total_nao_seguem_de_volta for menor mantemos o valor, e se for maior, modificamos o valor da variavel
+            usuario_com_mais_nao_reciprocados := nome_atual_usuario;  -- esta variavel salva o nome do usuario atual do loop, mas so se a confição if for aceita, não sera executado caso ja tenha salvo um usuario com mais seguidores nao reciprocos
         END IF;
     END LOOP;
 
-    -- Exibe o resultado final
+    -- aqui printamos a informacoes da pesquisa
     DBMS_OUTPUT.PUT_LINE('usuário que mais segue sem ser seguido de volta :( : ' || usuario_com_mais_nao_reciprocados);
     DBMS_OUTPUT.PUT_LINE('Quantidade das pessoas que nao seguem de votla: ' || maior_quantidade_nao_reciprocados);
 END;
+
+
+
+
+
 
 
 
