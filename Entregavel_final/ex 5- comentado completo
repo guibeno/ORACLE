@@ -1,1 +1,88 @@
 
+--- exercicio 5
+
+SELECT * FROM comunidade_community;  -- analisar esta tabela o nome e o sobre e encontrador o genero, aqui ta os dados da comunidade
+SELECT * FROM comunidade_community_user;  -- aqui temos o id_comunidade e o id_user que faz a ligacao da comunidade com quem criou
+SELECT * FROM comunidade_post;
+SELECT * FROM comunidade_post_curtidores;
+SELECT * FROM usuario_profile;
+SELECT * FROM auth_user;
+
+
+
+
+
+
+
+
+CREATE OR REPLACE PROCEDURE genero_musical_das_comunidades IS
+    CURSOR generos IS  -- este cursor salva todos os generos_musicas da tabela usuario_profile
+        SELECT generos_musicas FROM usuario_profile;
+    genero_texto   VARCHAR2(500); -- declaracao da variavel
+    genero_atual   VARCHAR2(500);
+    posicao INTEGER;
+    id_do_usuario NUMBER;
+    email_do_usuario VARCHAR2(100);
+    
+
+BEGIN
+    FOR g IN generos LOOP
+        -- aqui tive que implementar uma logica bem chata, talvez no banco poderiamos salvar cada genero em linhas diferentes mantendo o id do usuario?
+        -- genero_texto asume o valor do nome dos textos, texte inteiro, separado por virgula
+        genero_texto := g.generos_musicas;
+        -- enquanto a variavel tiver qualquer valor o loop sera realizado, nesta variavel esta o generos salvos
+        WHILE genero_texto IS NOT NULL LOOP
+            -- pesquisei na fonte https://pt.stackoverflow.com/questions/319495/como-separar-uma-letra-de-uma-character-em-sql, mesmo sendo postgre o exemplo, em oracle funciona tambem com o "instr"
+            -- posicao fica salvo o valor da char onde esta a virgula, ex se (sql,) aqui retornaria 4, virgula esta na posicao 4
+            posicao := INSTR(genero_texto, ',');
+            
+            -- se posicao for maior que 0 significa que foi encontrado a virgula, portanto
+            IF posicao > 0 THEN
+                genero_atual := TRIM(SUBSTR(genero_texto, 1, posicao - 1));  -- salva em genero_atual apenas o primeiro genero e usei o trim, caso tenha espaço, os espaços não serão salvos na variavel
+                genero_texto := SUBSTR(genero_texto, posicao + 1);  -- atualiza o texto do genero tirando o genero que ja foi lido ex: (1,2,3) fica (2,3)
+            ELSE  -- se cair no else significa que não foi encontrado mais virgulas
+                genero_atual := TRIM(genero_texto);
+                genero_texto := NULL;  -- passo valor null para genero_texto, por isso a condicao do while sera concebida e saira do loop
+            END IF;
+
+ 
+
+
+            -- for para passar por todas comunidade, resumindo a cada linha do cursor genero, busca a existencia da palavras em todos os nome e sobre das comunidades
+            -- seleciona nome e sobre 
+            -- logica fica reponsavel no where, primeiro passar tudo que busco para lower, caso o nome de um genero ou alguma escrita na tabela comunidade esteja com formato texto convergente, deixa tudo em lower para evitar este problam
+            -- o like busca determinada palavra no texto, os % no começo e no fim dos generos que passo em parametro, fazem com que qualquer texto que vem antes ou depois sejam ignorados ao achar a sequencia da caracteres esperadas
+            -- isso significa que a palavra que buscamos pode estar em qualquer parte do texto
+            -- g.generos_musicas é o parametro que esta no cursor generos, por fim o or traz a logica que o genero pode estar ou no nome ou no sobre ou nos dois
+            FOR generos_comunidade IN (
+                SELECT nome, sobre
+                FROM comunidade_community 
+                WHERE LOWER(nome) LIKE '%' || LOWER(TRIM(genero_atual)) || '%'
+                   OR LOWER(sobre) LIKE '%' || LOWER(TRIM(genero_atual)) || '%'
+            ) LOOP
+                DBMS_OUTPUT.PUT_LINE('comunidade encontrada: ' || generos_comunidade.nome  || ' - ' || generos_comunidade.sobre);  -- print em formato de tabela
+                
+                -- criei este for para selecionar todos os emails dos usuario que tem o genero encontrado (genero_atual) igual ao seu genero de escolha
+                -- a logica é executada atraves do join que interliga as tabelas baseado no id, precisa ligar a tabela, pois genero esta em profile e o email em auth_user
+                -- no where fiz um like pois os usuario tem mais de um genero salva na coluna, separados por ",". o where faz a ligacao do genero_atual encontrado com o generos do usuario
+                FOR u IN (
+                    SELECT us.email
+                    FROM usuario_profile up
+                    JOIN auth_user us ON up.user_id = us.id
+                    WHERE LOWER(up.generos_musicas) LIKE '%' || LOWER(genero_atual) || '%'
+                ) LOOP
+                    DBMS_OUTPUT.PUT_LINE('genero: ' || genero_atual ||', nome comunidade: ' || generos_comunidade.nome ||', email do usuario: ' || u.email);
+        
+                END LOOP;          
+            END LOOP;
+            
+        END LOOP;
+    END LOOP;
+END;
+
+
+BEGIN
+    genero_musical_das_comunidades;
+END;
+    
+    
