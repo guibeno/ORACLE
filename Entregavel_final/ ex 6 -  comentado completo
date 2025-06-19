@@ -1,9 +1,9 @@
--- EXERCICIO 6
 
 SELECT * FROM auth_user;
 SELECT * FROM musica_musicasalva;
 SELECT * FROM musica_musicasalva_playlistS;
 SELECT * FROM musica_playlist;
+SELECT * FROM musica_musicasalva_curtida;
 
 
 CREATE SEQUENCE seq_musica_playlist1  -- criei esta sequencia, inicia no 1 e vai adicionando +1 a cada dado salvo, sera adicionada na logica de criar nova playlist, para nenhuma ter o mesmo id
@@ -21,6 +21,9 @@ NOCACHE;
 CREATE OR REPLACE PACKAGE mydj AS  -- criacao do pacote
     FUNCTION id_do_usuario(nome_usuario IN VARCHAR2) RETURN NUMBER;  -- declaracao das funcões e procedures que irei fazer no package
     PROCEDURE criar_playlist(nome_usuario IN VARCHAR2, genero IN VARCHAR2);
+    PROCEDURE sugerir_10_musicas(s_id_do_usuario IN NUMBER);
+    FUNCTION artista_mais_curtado RETURN VARCHAR2;
+    
 END mydj;
     
 CREATE OR REPLACE PACKAGE BODY mydj AS
@@ -72,13 +75,77 @@ CREATE OR REPLACE PACKAGE BODY mydj AS
         COMMIT;
     END criar_playlist;
     
+    ----------
+    
+     PROCEDURE sugerir_10_musicas(s_id_do_usuario IN NUMBER) IS -- criacao da procedire passando o id do usuario como parametro
+        contador NUMBER := 0; -- inicializa o contador com valor 0
+    
+        -- a logica aqui consiste em salvar no cursor o nome da musica e o artista que nao estao salvos na playlist_curtida do usuario
+        -- o where filtra as musicas que o usuario nao tem salva nas playlist musicas_curtidas, entao where m.id (id musica) not in (nao pode estar na subconsulta)
+        -- na subconsulta o id da musica é captado nos casos em que o s.user (id do usuario) é igual ao id do parametro da consulta. Se for igual significa que o usuario tem essa musica salva, na playslit_curtidas
+        -- sendo assim estes ids das musica captados não vão ser salvos no cursor pela logica do where, que não utilizara musicas que sao buscadas na subconsulta (na playlist_curtida batendo com o id do usuario)
+        CURSOR musicas_favoritas IS
+            SELECT m.nome, m.artista
+            FROM musica_musicasalva m
+            WHERE m.id NOT IN (
+                SELECT s.musicasalva_id
+                FROM musica_musicasalva_curtida s
+                WHERE s.user_id = s_id_do_usuario
+            )
+            AND ROWNUM <= 10;  -- capta apenas 10 resultados, pois quero sugerir 10 musicas ao usuario
+    
+    BEGIN
+        DBMS_OUTPUT.PUT_LINE('10 sugestões de músicas que você ainda não favoritou:');  -- print so para ficar bonitinho no inicio da lista
+    
+        -- este loop capta todas as 10 musica do cursor e vai printar as 10 musicas ao usuario
+        -- contador que tem valor 0, ganha + 1 a cada rodada do loop para listar as 10 musicas
+        FOR musica IN musicas_favoritas LOOP
+            contador := contador + 1;
+            DBMS_OUTPUT.PUT_LINE(contador || ' - nome da musica: ' || musica.nome || ', artista: ' || musica.artista);
+        END LOOP;
+    END sugerir_10_musicas;
+    
+    ----------------------
+    
+     FUNCTION artista_mais_curtado
+    RETURN VARCHAR2 IS
+        artista_mais_curtido VARCHAR2(200);
+    BEGIN
+        -- aqui tive pensar bastante, mas a logica consiste em agrupar atraves do group by (group by agrupa todos as musica do mesmo artista para fazer a contagem da curtida em conjunto )
+        -- "total_curtidas" armazena a quantidade de vezes que músicas daquele artista foram curtidas, com o count(c.id), que conta o número de linhas na tabela musicasalva_curtida, relacionados com as músicas desse artista.
+        -- no join estabelece a conexão entre as tabelas onde o id da musica (m.id da musica_salva deve coincidir com o id da musica na tabela musica_curtida)
+        -- o order by é reponsavel por ordenar em ordem decrescente, na pratica o primeiro resultado retornado é o maior
+        SELECT artista INTO artista_mais_curtido
+        FROM (
+            SELECT m.artista, COUNT(c.id) AS total_curtidas
+            FROM musica_musicasalva m
+            JOIN musica_musicasalva_curtida c ON c.musicasalva_id = m.id
+            GROUP BY m.artista
+            ORDER BY total_curtidas DESC
+        )
+        WHERE ROWNUM = 1;  -- retornamos so o primeiro dado, pois estando em ordem decrescente, o primeiro valor é o maior
+    
+ 
+    
+        -- return com o nome do artista mais curtido
+        RETURN artista_mais_curtido;
+    END;
+
+
 END mydj;
 
+BEGIN
+    mydj.criar_playlist('Guilherme Dalmoro','Rock');
+END;
 
 
 BEGIN
-    mydj.criar_playlist('joao joao', 'Rock');
+    mydj.sugerir_10_musicas(1);
 END;
+
+
+SELECT  mydj.artista_mais_curtado FROM dual;
+
 
 
 SELECT mydj.id_do_usuario('joao vitor') AS id_usuario FROM dual;
