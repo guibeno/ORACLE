@@ -1,0 +1,18 @@
+-- fonte que pesquisei o trunc: https://pt.stackoverflow.com/questions/262967/qual-%C3%A9-a-l%C3%B3gica-por-tr%C3%A1s-da-fun%C3%A7%C3%A3o-trunc
+CREATE OR REPLACE PROCEDURE retorna_numeros_quadrado(numero IN NUMBER) IS -- criei a procedure que recebe um number como parametro, este numero será o total de numeros aleatorios que irei gerar
+    numero_aleatorio NUMBER;  -- criei a variavel numero aleatorio, sera usada para armazenar o numero do random
+    numero_ao_quadrado NUMBER; -- numero ao quadrado irá armazenar o valor do numero pós calculo
+BEGIN
+    FOR i IN 1 .. numero LOOP -- loop de 1 até o numero que passa em parametro, cada vez que roda o loop é gerado um novo numero e feito o calculo desse numero
+        numero_aleatorio := TRUNC(DBMS_RANDOM.VALUE(1,100)); -- o random (conhecido em diversas linguagens de programacao, gera um numero aleatorio entre  os parametro ex. (1,100), de 1 até 100
+                                                            -- trunc faz com que gere somente numero inteiros
+        numero_ao_quadrado := numero_aleatorio * numero_aleatorio; -- numero * numero tem o numero ao quadrado armazenado na variavel
+        DBMS_OUTPUT.PUT_LINE('numero analisado: ' || numero_aleatorio || ', numero ao quadrado: ' || numero_ao_quadrado); -- print do valor que geramos e do valor ao quadrado
+    END LOOP;
+END;
+
+
+
+BEGIN
+    retorna_numeros_quadrado(5); -- retornara 5 numeros aleatorios
+END;
