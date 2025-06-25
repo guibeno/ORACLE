@@ -1,0 +1,15 @@
+CREATE OR REPLACE FUNCTION dez_porcento_desconto (valor IN NUMBER)  -- criei a funcao do desconto que recebe uma valor NUMBER como parametro
+RETURN NUMBER IS  -- a funcao ira retornar um number
+BEGIN
+    return valor * 0.9; -- o retorno sera o valor recebido por parametro * 0.9 do seu valor, portanto retirei do valor total 0.1 equivalente a 10%
+END dez_porcento_desconto;  -- encerrei a função
+    
+DECLARE  -- criacao do bloco anonimo
+    valor_original NUMBER := 110; -- o valor original é o valor que queremos aplicar o desconto
+    valor_com_desconto NUMBER;  -- valor com desconto é a variavel que ira receber o valor que retornara da funcao
+BEGIN -- criacao do bloco begin
+    valor_com_desconto := dez_porcento_desconto(valor_original);  -- valor_com_desconto recebe o valor da retornado da função passando como parametro o (valor_original)
+    DBMS_OUTPUT.PUT_LINE('valor original:'|| valor_original); -- print do valor original
+    DBMS_OUTPUT.PUT_LINE('valor com desconto:'|| valor_com_desconto);  -- print do valor com desconto
+END;
+    
