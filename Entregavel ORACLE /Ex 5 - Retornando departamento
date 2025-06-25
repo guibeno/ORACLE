@@ -27,6 +27,18 @@ BEGIN
 END;
 /
 
+-- CODIGO QUE COMECEI
+SELECT * FROM employees_nopk;
+
+DECLARE
+    id_do_departamento NUMBER := 100;
+    nome_do_funcionario VARCHAR2(200);
+    
+    
+BEGIN
+
+
+
     
     
     
