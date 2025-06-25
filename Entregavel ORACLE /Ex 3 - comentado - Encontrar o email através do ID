@@ -1,0 +1,22 @@
+SELECT * FROM clientes;  -- vou trabalhar nesta tabela clientes
+
+CREATE OR REPLACE PROCEDURE consulta_de_email(id_do_cliente IN NUMBER) -- criacao da procedure com id_do_cliente como parametro number, usaremos este id como comparação posteriormente no where
+IS
+    email_do_cliente VARCHAR2(200); -- criei a variavel que irei armazenar o email do cliente caso encontrado
+BEGIN -- criacao do bloco beguin 
+    IF id_do_cliente < 0 THEN -- condicao: se o id_do_cliente for menor que 0 então
+        DBMS_OUTPUT.PUT_LINE('id od cliente negativo'); -- print do id do cliente negativo
+    ELSE -- else considera portanto qualquer valor que não caia na primeira condicao que seria todos maior que 0
+        SELECT email INTO email_do_cliente -- selecinei o email (coluna que quero trazer) e atraves do into salvo ela na variavel que criei anteriormente
+        FROM clientes 
+        WHERE id = id_do_cliente; -- aqui esta a logica para identificar o cliente, a coluna id deve ser igual ao parametro passado a procedure
+        DBMS_OUTPUT.PUT_LINE('EMAIL DO CLIENTE É:'||email_do_cliente);  -- print da variavel que encontramos o email do cliente
+    END IF;
+EXCEPTION  -- criei a excessao
+    WHEN NO_DATA_FOUND THEN -- caso no_data_found que significa que o valor não foi encontrado ele cai nesse execesso
+        DBMS_OUTPUT.PUT_LINE('Usuário com este id não existe'); -- printei portanto que o usuario nao existe
+END consulta_de_email;
+
+BEGIN
+    consulta_de_email(3000); -- chamei a procedure passando um numero que não existe na tabela como parametro, neste caso ira retornar a excessao
+END;
