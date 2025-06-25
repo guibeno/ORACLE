@@ -1,14 +1,16 @@
-CREATE OR REPLACE FUNCTION random_squared (n IN NUMBER) RETURN NUMBER IS
+CREATE OR REPLACE PROCEDURE retorna_numeros_quadrado(numero IN NUMBER) IS -- criei a procedure que recebe um number como parametro, este numero será o total de numeros aleatorios que irei gerar
+    numero_aleatorio NUMBER;
+    numero_ao_quadrado NUMBER;
 BEGIN
-    RETURN POWER(n , 2);
-END random_squared;
+    FOR i IN 1 .. numero LOOP
+        numero_aleatorio := TRUNC(DBMS_RANDOM.VALUE(1,100));
+        numero_ao_quadrado := numero_aleatorio * numero_aleatorio;
+        DBMS_OUTPUT.PUT_LINE('Número analisado: ' || numero_aleatorio || ', Número ao quadrado: ' || numero_ao_quadrado);
+    END LOOP;
+END;
 
-DECLARE 
-    v_result NUMBER;
-    v_numero_aleatorio NUMBER;
+
+
 BEGIN
-    v_numero_aleatorio := TRUNC(DBMS_RANDOM.VALUE(1, 101));
-    v_result:= random_squared(v_numero_aleatorio);
-    DBMS_OUTPUT.PUT_LINE('Numero aleatório: ' ||v_numero_aleatorio);
-    DBMS_OUTPUT.PUT_LINE('Numero aleatório ao quadrado: '|| v_result);
+    retorna_numeros_quadrado(5);
 END;
