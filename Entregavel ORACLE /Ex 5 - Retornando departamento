@@ -1,44 +1,13 @@
-
-CREATE OR REPLACE FUNCTION listar_funcionarios(p_id IN NUMBER) 
-RETURN SYS_REFCURSOR IS
-    v_cursor SYS_REFCURSOR;
-BEGIN
-        OPEN v_cursor FOR
-        SELECT e.employeename,
-                e.dptoid
-        FROM EMPLOYEES_NOPK e
-        WHERE e.dptoid = p_id;
-    RETURN v_cursor;
-END listar_funcionarios;
-
-
 DECLARE
-    v_cursor SYS_REFCURSOR;
-    v_dptoname VARCHAR2(100);
-    v_dptoid NUMBER;
+    id_do_departamento NUMBER := 10;
+
+    CURSOR lista_funcionarios IS
+        SELECT e.employeename 
+        FROM employees_nopk e
+        WHERE e.dptoid = id_do_departamento; 
+
 BEGIN
-    v_cursor := listar_funcionarios(10);
-    LOOP
-        FETCH v_cursor INTO v_dptoname, v_dptoid;
-        EXIT WHEN v_cursor%NOTFOUND;
-        DBMS_OUTPUT.PUT_LINE('funcionario:'||v_cursor ,'Departamento: ' || v_dptoname || ', ID: ' || v_dptoid);
+    FOR i IN lista_funcionarios LOOP
+        DBMS_OUTPUT.PUT_LINE('Nome do funcionário: ' || i.employeename);
     END LOOP;
-    CLOSE v_cursor;
 END;
-/
-
--- CODIGO QUE COMECEI
-SELECT * FROM employees_nopk;
-
-DECLARE
-    id_do_departamento NUMBER := 100;
-    nome_do_funcionario VARCHAR2(200);
-    
-    
-BEGIN
-
-
-
-    
-    
-    
