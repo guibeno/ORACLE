@@ -1,18 +1,13 @@
-CREATE OR REPLACE PROCEDURE aumentar_estoque (
-    p_number IN NUMBER,
-    P_result OUT NUMBER
-) IS
-BEGIN
-    p_result := p_number + 10;
-END aumentar_estoque;
-/
+CREATE OR REPLACE PROCEDURE aumento_de_estoque(quantidade IN NUMBER)  -- criacao da funcao com quantidade como parametro sendo um number
+IS
+    quantidade_final NUMBER; -- criei a variavel quantidade final e declarei ela aqui, esta variavel armezenara a quantidade do produto com soma +10
 
-DECLARE
-    v_valor_original NUMBER := 100;
-    v_valor_final NUMBER;
 BEGIN
-    aumentar_estoque(v_valor_original,v_valor_final);
-    DBMS_OUTPUT.PUT_LINE('Valor original: R$ ' || v_valor_original);
-    DBMS_OUTPUT.PUT_LINE('Valor com aumento de 10 unidades: ' || v_valor_final);
+    quantidade_final := quantidade + 10;  -- conta aqui, quantidade + 10 salvo na variavel quantidade_final
+    DBMS_OUTPUT.PUT_LINE('valor com o aumento do estoque:' || quantidade_final); -- print da quantidade final
+END aumento_de_estoque;
+
+
+BEGIN
+    aumento_de_estoque(120); -- chamo a procedure mandando um valor number como parametro
 END;
-/
