@@ -1,14 +1,19 @@
-CREATE OR REPLACE FUNCTION dividir_palavras(p_texto IN VARCHAR2)
-RETURN SYS.ODCIVARCHAR2LIST PIPELINED IS
-    v_inicio NUMBER := 1;
-    v_fim NUMBER;
+-- dei uma pesquisada na net sobre divisao de palavras em plsql, vou deixar a fonte abaixo, achei interessante a tecnica com pepilined
+-- https://stackoverflow.com/questions/14328621/splitting-string-into-multiple-rows-in-oracle?utm_source
+
+CREATE OR REPLACE FUNCTION dividir_palavras(p_texto IN VARCHAR2) -- criei a funcao que recebera o texto como parametro
+RETURN SYS.ODCIVARCHAR2LIST PIPELINED IS  -- retorno da palavras em linha formato table
+    v_inicio NUMBER := 1; -- esta variaval marca a posicao do começo da palavra, portando começa em 1, posicao 1
+    v_fim NUMBER; -- esta variavel armazena o final da palavra que encontramos, portando o valor correspondente antes do ' ' 
 BEGIN
     LOOP
-        v_fim := INSTR(p_texto || ' ', ' ', v_inicio);
-        EXIT WHEN v_fim = 0;
-        PIPE ROW (TRIM(SUBSTR(p_texto, v_inicio, v_fim - v_inicio)));
-        v_inicio := v_fim + 1;
+        v_fim := INSTR(p_texto || ' ', ' ', v_inicio);  ---  a funcao INSTR procura o espaço em branco ' ' a partir da posicao v_inicio e cria mais um ' ' em p_texto, pois a ultima palavra passada no parametro, não tera espaço provavelmente
+        EXIT WHEN v_fim = 0; -- caso v_fim seja igual a 0, significa que não tem mais palavras e através do exit sai do loop caso seja atingida essa condição
+        PIPE ROW (TRIM(SUBSTR(p_texto, v_inicio, v_fim - v_inicio))); -- pega exatamente o trecho onde esta a palavra , usa o parametro do inicio e fim para encontrar a posicao, pipe row executar como uma linha e o TRIM remove os espaços extras
+        v_inicio := v_fim + 1; -- o v_inicio agora salva a posicao final que seria o ' ' +1 portando ficara salva a posicao do inicio da proxima palavra
     END LOOP;
     RETURN;
 END dividir_palavras;
-/
+
+
+SELECT * FROM TABLE(dividir_palavras('ola tudo bem')); -- para imprimir em formato tabela chama a function com table por ser uma funcao pipelined(varias linhas)
