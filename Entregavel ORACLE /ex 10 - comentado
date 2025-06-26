@@ -1,0 +1,50 @@
+-- exercicio 10
+
+CREATE OR REPLACE PROCEDURE conceder_permissao( -- criacao da procedure com os 3 parametro que precisa, o usuario, a permissao e a tabela
+    usuario VARCHAR2,
+    tabela VARCHAR2,
+    permissao VARCHAR2
+)
+IS
+     texto VARCHAR(500); -- nesta variavel ficara armazenado o texto que irei concatenar as informações
+BEGIN 
+     texto := ('GRANT ' ||permissao||' ON '|| tabela||' TO '|| usuario); -- adcionei em texto o comando como 'grant','on' e 'to' e fui passando os parametros para concatenação
+     EXECUTE IMMEDIATE texto; -- execute immediate para executar o comando
+
+    DBMS_OUTPUT.PUT_LINE('grat executado com sucesso');-- print que deu certo
+EXCEPTION -- excessao para constatar erro
+    WHEN OTHERS THEN 
+        DBMS_OUTPUT.PUT_LINE('algum dado invalido'); -- print que algum dado estava errado e nao deu certo
+END;
+
+BEGIN
+    conceder_permissao('CARLO','GESTOR','SELECT');  -- passa os parametro do grant que quero dar
+END;
+
+
+-- exercicio 10 desafio
+
+SELECT * FROM user_tables; --- select em todas as tabelas do schema
+
+
+CREATE OR REPLACE PROCEDURE conceder_permissao( -- criacao da procedure com os 3 parametro que precisa, o usuario, a permissao e a tabela
+    usuario VARCHAR2,  -- tirei a tabela por não precisa neste caso
+    permissao VARCHAR2 
+)
+IS
+     texto VARCHAR2(500); -- nesta variavel ficara armazenado o texto que irei concatenar as informações
+BEGIN 
+    FOR nome_tabela IN (SELECT table_name FROM user_tables) LOOP -- aqui esta a mudandça da logica, o for captura todos os table_name da tebela user_tables(tabela que traz todas as tabelas cliadas no shema
+         texto := ('GRANT ' ||permissao||' ON '||nome_tabela.table_name||' TO '|| usuario); -- passo como parametro o nome_tabela que ir passando por todas tabelas a cada loop
+         EXECUTE IMMEDIATE texto; -- execute immediate para executar o comando 
+    END LOOP;
+    
+    DBMS_OUTPUT.PUT_LINE('grat executado com sucesso');-- print que deu certo
+EXCEPTION -- excessao para constatar erro
+    WHEN OTHERS THEN 
+        DBMS_OUTPUT.PUT_LINE('algum dado invalido'); -- print que algum dado estava errado e nao deu certo
+END;
+
+BEGIN
+    conceder_permissao('CARLO','SELECT');  -- passa os parametro, so nao precisa passar a tebela ja que vamos dar o grant em todas as tabelas
+END;
