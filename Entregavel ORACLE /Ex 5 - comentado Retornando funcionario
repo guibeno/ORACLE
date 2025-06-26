@@ -1,0 +1,17 @@
+SELECT * FROM employees_nopk;
+SELECT * FROM departments_nopk;
+
+DECLARE
+    id_do_departamento NUMBER := 10;  -- declaracao da variavel do id do departamento que estamos buscando
+    
+
+    CURSOR lista_funcionarios IS -- a logica desse cursor é armazenar em lista_funcionarios o employeename(nome do funcionario), no where o dptoid deve ser igual ao id_do_departamento
+        SELECT e.employeename   -- o dptoid é o identificar do id do departamento, entao o cursor retorna todos com o mesmo id do deparmente que quero
+        FROM employees_nopk e
+        WHERE e.dptoid = id_do_departamento; 
+
+BEGIN
+    FOR i IN lista_funcionarios LOOP -- o loop para lista todos os dados do cursor, portanto o 'i' lista uma linha do cursor a cada volta do loop
+        DBMS_OUTPUT.PUT_LINE('Nome do funcionário: ' || i.employeename); -- print do nome dos funcionarios
+    END LOOP;
+END;
