@@ -1,0 +1,13 @@
+DECLARE 
+    texto VARCHAR2(500) := 'ola tudo bem contigo'; -- variavel do texto que quero contabilizar as palavras
+    contador_de_palavras NUMBER := 0; -- contador de palavras que inicia em 0
+BEGIN 
+    --- a logica é formada aqui dentro do for, realiza a mesma chamada table através do select porem inteiramos um loop para cada palavra, cada vez que o loop é rodado o contador soma mais 1
+    FOR I IN (SELECT * FROM TABLE(dividir_palavras(texto))) LOOP
+        contador_de_palavras := contador_de_palavras +1;
+        DBMS_OUTPUT.PUT_LINE(I.COLUMN_VALUE); -- aqui para confirmar a logica, I do for tem a valor da linha, entao printamos a palavra aqui tambem dentro do for
+    END LOOP;
+    
+    DBMS_OUTPUT.PUT_LINE('total de palavras: '||contador_de_palavras); -- print do valor do contador de palavras
+END;
+
