@@ -1,0 +1,54 @@
+-- adicionando nome do meio
+
+DECLARE
+    nome_do_meio VARCHAR2(100);
+    primeiro_nome_v VARCHAR2(100);
+    segundo_nome_v VARCHAR2(100);
+    nome_completo_v VARCHAR2(200);
+    contador_linhas_primeiro NUMBER;
+    contador_linhas_segundo NUMBER;
+    contador_linhas_final NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO contador_linhas_primeiro
+    FROM primeiro_nome;
+    
+    SELECT COUNT(*) INTO contador_linhas_segundo
+    FROM segundo_nome;
+    
+    IF contador_linhas_primeiro > contador_linhas_segundo THEN
+        contador_linhas_final:= contador_linhas_segundo;
+    ELSIF contador_linhas_segundo > contador_linhas_primeiro THEN
+        contador_linhas_final := contador_linhas_primeiro;
+    ELSE
+        contador_linhas_final := contador_linhas_primeiro;
+    END IF;
+
+    FOR I IN 1.. contador_linhas_final LOOP
+        SELECT nome INTO primeiro_nome_v
+        FROM primeiro_nome
+        ORDER BY DBMS_RANDOM.VALUE
+        FETCH FIRST 1 ROWS ONLY;
+        
+        SELECT nome INTO segundo_nome_v
+        FROM segundo_nome
+        ORDER BY DBMS_RANDOM.VALUE
+        FETCH FIRST 1 ROWS ONLY;
+        
+        SELECT a.nome INTO nome_do_meio
+        FROM segundo_nome a
+        WHERE segundo_nome_v != a.nome
+        ORDER BY DBMS_RANDOM.VALUE
+        FETCH FIRST 1 ROWS ONLY;
+        
+        nome_completo_v := primeiro_nome_v ||' '||nome_do_meio||' '|| segundo_nome_v;
+        
+        INSERT INTO nomes_completos(id,nome)
+        VALUES (minha_sequencia.NEXTVAL, nome_completo_v);
+        
+        DBMS_OUTPUT.PUT_LINE('Nome inserido: '|| nome_completo_v);
+    END LOOP;
+           
+END;
+
+
+
