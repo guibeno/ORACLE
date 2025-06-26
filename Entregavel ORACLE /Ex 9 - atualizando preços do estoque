@@ -1,16 +1,15 @@
-BEGIN
+SELECT * FROM produtos; -- vou trabalhar encima desta tabela quue ja usamos no entregavel do semestre anterior e passamos para oracle no inicio desse semestre
 
-    UPDATE estoque_online
-    SET preco = preco * 0.90;
-
-    UPDATE estoque_loja_fisica
-    SET preco = preco * 0.90;
-
-    COMMIT;
-    DBMS_OUTPUT.put_line('Preços atualizados com sucesso.');
-EXCEPTION
-    WHEN OTHERS THEN
-        ROLLBACK;
-        DBMS_OUTPUT.put_line('Erro ao atualizar os preços: ' || SQLERRM);
+DECLARE -- criacao do bloco anonimo
+BEGIN -- a logica consiste em aualizar o preco para o valor de preco * 0.9, assim ficara so 90% do valor original, dando um desconto de 10%
+    UPDATE produtos
+    SET preco = preco *0.9;
+    -- nao utilizaremos o where pois já que queremos atualizar todos os precos, sem o filtro era atualizar todas as linhas da coluna preco
+    
+    COMMIT; -- commit caso tudo seja bem sucedido
+    DBMS_OUTPUT.PUT_LINE('precos atualizados com sucesso'); -- print para confirmar
+EXCEPTION -- excessao caso aja algum erro
+     WHEN OTHERS THEN 
+        ROLLBACK; -- rollaback caso erro encontrado, para não ter risco de salvar informações invalidas no banco
+        DBMS_OUTPUT.PUT_LINE('Erro ao atualizar os precos'); -- print para confirmar o erro
 END;
-/
