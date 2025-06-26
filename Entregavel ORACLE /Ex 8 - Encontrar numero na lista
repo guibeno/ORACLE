@@ -1,10 +1,9 @@
-DECLARE
-    v_numero NUMBER := 3;
+DECLARE -- criacao do bloco
+    numero NUMBER := 3; -- define o numero que busco na lista
 BEGIN
-    IF v_numero IN (1, 2, 3, 4, 5) THEN
-        DBMS_OUTPUT.put_line('Número encontrado na lista.');
+    IF numero IN (1,2,3,4,5) THEN  -- logica consiste aqui, se o numero for encontrado na lista , numero encontrado, se não cai para o else e emite a mensagem de erro
+        DBMS_OUTPUT.PUT_LINE('numero '||numero||' encontrado na lista');
     ELSE
-        DBMS_OUTPUT.put_line('Número não encontrado na lista.');
+        DBMS_OUTPUT.PUT_LINE('numero não encontrado na lista'); -- mensagem de erro
     END IF;
 END;
-/
